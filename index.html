@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Хмель — зелёное золото России</title>
 <style>
-/* ============================================
-   БАЗА
-   ============================================ */
 * { box-sizing: border-box; }
 
 :root {
@@ -62,7 +59,7 @@ body {
 }
 
 /* ============================================
-   ЭКРАНЫ (вход, выбор персонажа, контакты)
+   ЭКРАНЫ
    ============================================ */
 .screen {
     min-height: 100vh;
@@ -158,26 +155,49 @@ body {
     text-align: center;
     position: relative;
 }
-.character img {
+
+/* Контейнер под картинку (для заглушки-эмодзи) */
+.char-img-wrap {
     width: 260px;
     height: 260px;
-    object-fit: contain;
     border-radius: 24px;
     background: rgba(255,255,255,0.08);
-    padding: 16px;
     backdrop-filter: blur(4px);
-    transition: all 0.4s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
     animation: float 4s ease-in-out infinite;
     filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+    transition: all 0.4s;
 }
-.character:nth-child(2) img { animation-delay: 1s; }
+.character:nth-child(2) .char-img-wrap { animation-delay: 1s; }
+
+.char-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 16px;
+    display: block;
+}
+
+/* Эмодзи-заглушка, если картинки нет */
+.char-emoji {
+    font-size: 140px;
+    display: none;
+    line-height: 1;
+    user-select: none;
+}
+.char-img-wrap.no-image .char-emoji { display: block; }
+.char-img-wrap.no-image img { display: none; }
 
 @keyframes float {
     0%, 100% { transform: translateY(0); }
     50%      { transform: translateY(-14px); }
 }
 .character:hover { transform: scale(1.08); }
-.character:hover img {
+.character:hover .char-img-wrap {
     background: rgba(255,255,255,0.2);
     box-shadow: 0 0 40px rgba(139,195,74,0.7);
 }
@@ -222,7 +242,7 @@ body {
 }
 
 /* ============================================
-   ЭКРАН КАРТЫ (твоя интерактивная карта)
+   ЭКРАН КАРТЫ
    ============================================ */
 #screen-map {
     min-height: 100vh;
@@ -325,6 +345,26 @@ body {
     stroke: var(--gold);
     stroke-width: 2.5;
     filter: brightness(1.2);
+}
+
+/* Подписи областей на карте */
+.region-label {
+    font-size: 11px;
+    font-weight: 700;
+    fill: #ffffff;
+    text-anchor: middle;
+    pointer-events: none;
+    paint-order: stroke;
+    stroke: rgba(26, 77, 46, 0.85);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    letter-spacing: 0.3px;
+    user-select: none;
+}
+/* Для светлых регионов — тёмный текст */
+.region-label.on-light {
+    fill: #1a4d2e;
+    stroke: rgba(255, 255, 255, 0.9);
 }
 
 .legend {
@@ -442,8 +482,9 @@ body {
     .subtitle { font-size: 16px; }
     #screen-characters h2 { font-size: 24px; margin-bottom: 30px; }
     .characters { gap: 40px; }
-    .character img { width: 160px; height: 160px; }
+    .char-img-wrap { width: 160px; height: 160px; }
     .character p { font-size: 18px; }
+    .char-emoji { font-size: 90px; }
     .logo h1 { font-size: 16px; }
 }
 </style>
@@ -472,14 +513,25 @@ body {
 <div id="screen-characters" class="screen">
     <h2>С кем хочешь отправиться в путешествие?</h2>
     <div class="characters">
+
         <div class="character" onclick="chooseCharacter('boy')">
-            <img src="boy.png" alt="Мальчик">
+            <div class="char-img-wrap">
+                <img src="boy.png" alt="Мальчик"
+                     onerror="this.parentElement.classList.add('no-image')">
+                <span class="char-emoji">👦</span>
+            </div>
             <p>Мальчик</p>
         </div>
+
         <div class="character" onclick="chooseCharacter('girl')">
-            <img src="girl.png" alt="Девочка">
+            <div class="char-img-wrap">
+                <img src="girl.png" alt="Девочка"
+                     onerror="this.parentElement.classList.add('no-image')">
+                <span class="char-emoji">👧</span>
+            </div>
             <p>Девочка</p>
         </div>
+
     </div>
 </div>
 
@@ -494,7 +546,7 @@ body {
 </div>
 
 <!-- ============================================
-     ЭКРАН 4: ИНТЕРАКТИВНАЯ КАРТА
+     ЭКРАН 4: КАРТА
      ============================================ -->
 <div id="screen-map" class="screen">
 
@@ -555,15 +607,12 @@ function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo(0, 0);
-    // Если открываем карту — инициализируем её один раз
     if (id === 'screen-map') initMap();
 }
 
 function chooseCharacter(who) {
-    // Просто переходим на экран карты (без редиректа)
     showScreen('screen-map');
     console.log('Выбран персонаж:', who);
-    // Можно сохранить выбор:
     localStorage.setItem('character', who);
 }
 
@@ -623,21 +672,76 @@ const regionsData = {
     }
 };
 
+/* ============================================
+   КООРДИНАТЫ РЕГИОНОВ
+   + short — короткое имя для подписи (в 2 строки через \n)
+   + labelX / labelY — сдвиг подписи от центра
+   ============================================ */
 const russiaRegions = [
-    { name: "Московская область",    points: "120,220 160,210 175,240 150,265 115,255" },
-    { name: "Ленинградская область", points: "100,150 145,140 160,175 130,190 95,175" },
-    { name: "Краснодарский край",    points: "130,370 175,360 195,395 165,420 125,405" },
-    { name: "Воронежская область",   points: "160,290 200,280 215,310 185,330 155,315" },
-    { name: "Республика Татарстан",  points: "250,265 295,255 310,290 280,310 245,295" },
-    { name: "Республика Башкортостан", points: "310,265 360,255 375,300 340,320 305,300" },
-    { name: "Пермский край",         points: "300,200 355,190 375,235 340,255 300,235" },
-    { name: "Республика Марий Эл",   points: "235,225 275,215 290,250 260,270 230,250" },
-    { name: "Республика Чувашия",    points: "235,270 275,260 285,295 255,310 230,290" },
-    { name: "Алтайский край",        points: "450,290 520,280 545,330 500,355 445,330" }
+    {
+        name: "Московская область",
+        short: "Московская\nобласть",
+        points: "120,220 160,210 175,240 150,265 115,255",
+        labelX: 2, labelY: 0
+    },
+    {
+        name: "Ленинградская область",
+        short: "Ленинградская\nобласть",
+        points: "100,150 145,140 160,175 130,190 95,175",
+        labelX: 5, labelY: 2
+    },
+    {
+        name: "Краснодарский край",
+        short: "Краснодарский\nкрай",
+        points: "130,370 175,360 195,395 165,420 125,405",
+        labelX: 8, labelY: 0
+    },
+    {
+        name: "Воронежская область",
+        short: "Воронежская\nобласть",
+        points: "160,290 200,280 215,310 185,330 155,315",
+        labelX: 5, labelY: 0
+    },
+    {
+        name: "Республика Татарстан",
+        short: "Татарстан",
+        points: "250,265 295,255 310,290 280,310 245,295",
+        labelX: 0, labelY: 0
+    },
+    {
+        name: "Республика Башкортостан",
+        short: "Башкортостан",
+        points: "310,265 360,255 375,300 340,320 305,300",
+        labelX: 2, labelY: 0
+    },
+    {
+        name: "Пермский край",
+        short: "Пермский\nкрай",
+        points: "300,200 355,190 375,235 340,255 300,235",
+        labelX: 0, labelY: 0
+    },
+    {
+        name: "Республика Марий Эл",
+        short: "Марий Эл",
+        points: "235,225 275,215 290,250 260,270 230,250",
+        labelX: 5, labelY: 0
+    },
+    {
+        name: "Республика Чувашия",
+        short: "Чувашия",
+        points: "235,270 275,260 285,295 255,310 230,290",
+        labelX: 5, labelY: 0
+    },
+    {
+        name: "Алтайский край",
+        short: "Алтайский\nкрай",
+        points: "450,290 520,280 545,330 500,355 445,330",
+        labelX: 0, labelY: 0
+    }
 ];
 
 /* ============================================
-   ИНИЦИАЛИЗАЦИЯ КАРТЫ (один раз)
+   ИНИЦИАЛИЗАЦИЯ КАРТЫ
    ============================================ */
 let mapInitialized = false;
 
@@ -651,7 +755,7 @@ function initMap() {
     g.setAttribute("id", "mapGroup");
     svg.appendChild(g);
 
-    // Фон-контур
+    // Фон-контур России
     const bgPath = document.createElementNS(SVG_NS, "path");
     bgPath.setAttribute("d", "M60,140 Q120,90 220,120 L280,180 L320,170 L380,200 L450,190 L520,240 L560,300 L530,360 L460,380 L390,360 L320,340 L250,360 L180,400 L120,370 L80,300 Z");
     bgPath.setAttribute("fill", "#eaf2ec");
@@ -668,26 +772,34 @@ function initMap() {
         poly.setAttribute("class", `region ${data.potential}`);
         poly.dataset.name = region.name;
 
+        // Центр региона
         const coords = region.points.split(" ").map(p => p.split(",").map(Number));
         const cx = coords.reduce((s, p) => s + p[0], 0) / coords.length;
         const cy = coords.reduce((s, p) => s + p[1], 0) / coords.length;
 
+        // Подпись региона (может быть в 2 строки через \n)
+        const lines = region.short.split("\n");
         const label = document.createElementNS(SVG_NS, "text");
-        label.setAttribute("x", cx);
-        label.setAttribute("y", cy);
-        label.setAttribute("text-anchor", "middle");
-        label.setAttribute("font-size", "10");
-        label.setAttribute("fill", "#1a4d2e");
-        label.setAttribute("pointer-events", "none");
-        label.setAttribute("font-weight", "600");
-        label.textContent = region.name.split(" ").slice(-1)[0];
+        label.setAttribute("x", cx + (region.labelX || 0));
+        label.setAttribute("y", cy + (region.labelY || 0) - (lines.length - 1) * 6);
+        label.setAttribute("class",
+            "region-label" + (data.potential === "low" ? " on-light" : "")
+        );
+
+        lines.forEach((line, i) => {
+            const tspan = document.createElementNS(SVG_NS, "tspan");
+            tspan.setAttribute("x", cx + (region.labelX || 0));
+            tspan.setAttribute("dy", i === 0 ? "0" : "12");
+            tspan.textContent = line;
+            label.appendChild(tspan);
+        });
 
         poly.addEventListener("click", () => selectRegion(region.name));
         g.appendChild(poly);
         g.appendChild(label);
     });
 
-    // Зум/пан
+    /* ===== Зум / пан ===== */
     let scale = 1, translateX = 0, translateY = 0;
     let isPanning = false, startX, startY;
 
@@ -726,7 +838,7 @@ function initMap() {
         updateTransform();
     }, { passive: false });
 
-    // Навигация внутри карты
+    /* ===== Навигация ===== */
     document.querySelectorAll(".nav-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             const view = btn.dataset.view;
