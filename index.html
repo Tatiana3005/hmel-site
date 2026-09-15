@@ -459,7 +459,6 @@ body {
 }
 #russiaMap:active { cursor: grabbing; }
 
-/* === Регионы === */
 .region {
     stroke: #ffffff;
     stroke-width: 1;
@@ -485,7 +484,6 @@ body {
     pointer-events: none;
 }
 
-/* === Подписи регионов === */
 .region-label {
     font-family: 'Manrope', sans-serif;
     font-size: 10.5px;
@@ -506,7 +504,6 @@ body {
     stroke: rgba(255, 255, 255, 0.95);
 }
 
-/* === Маркеры-иконки === */
 .region-marker {
     pointer-events: none !important;
     transition: opacity 0.3s;
@@ -526,7 +523,6 @@ body {
     user-select: none;
 }
 
-/* === Пульсирующие круги === */
 .pulse-ring {
     fill: none;
     stroke: var(--gold);
@@ -542,7 +538,6 @@ body {
     100% { transform: scale(2.2); opacity: 0; }
 }
 
-/* === Связи между регионами === */
 .region-link {
     fill: none;
     stroke: var(--green-500);
@@ -556,7 +551,6 @@ body {
     to { stroke-dashoffset: -200; }
 }
 
-/* === Маршрут === */
 .route-path {
     fill: none;
     stroke: var(--gold);
@@ -578,7 +572,6 @@ body {
     pointer-events: none !important;
 }
 
-/* === Тултип === */
 .map-tooltip {
     position: absolute;
     background: var(--panel-bg-strong);
@@ -617,7 +610,6 @@ body {
 .map-tooltip .badge.medium { background: linear-gradient(135deg, #a5d6a7, #7bc47f); color: #14401f; }
 .map-tooltip .badge.low    { background: linear-gradient(135deg, #e8f5e9, #c5e0c8); color: #14401f; }
 
-/* === Легенда === */
 .legend {
     position: absolute;
     top: 20px;
@@ -700,7 +692,6 @@ body {
     border-radius: 50px;
 }
 
-/* === Компас === */
 .compass {
     position: absolute;
     top: 20px;
@@ -745,7 +736,6 @@ body {
     border-bottom-color: var(--gold);
 }
 
-/* === Зум === */
 .zoom-controls {
     position: absolute;
     bottom: 24px;
@@ -787,7 +777,6 @@ body {
     margin: 2px 4px;
 }
 
-/* === Нижняя панель === */
 .map-bottom-bar {
     position: absolute;
     bottom: 24px;
@@ -824,7 +813,6 @@ body {
 }
 .map-btn:active { transform: translateY(0); }
 
-/* === Координаты === */
 .map-status {
     position: absolute;
     bottom: 24px;
@@ -847,7 +835,6 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
-/* === Мини-карта === */
 .minimap {
     position: absolute;
     bottom: 24px;
@@ -890,7 +877,6 @@ body {
     pointer-events: none;
 }
 
-/* === Подсказка === */
 .map-hint {
     position: absolute;
     top: 50%;
@@ -1231,7 +1217,7 @@ body {
         <div class="character" onclick="chooseCharacter('boy')" tabindex="0"
              onkeydown="if(event.key==='Enter')chooseCharacter('boy')">
             <div class="char-img-wrap">
-                <img src="boy.png" alt="Мальчик" onerror="this.parentElement.classList.add('no-image')">
+                <img src="boy.jpg" alt="Мальчик" onerror="this.parentElement.classList.add('no-image')">
                 <span class="char-emoji">👦</span>
             </div>
             <p>Мальчик</p>
@@ -1239,7 +1225,7 @@ body {
         <div class="character" onclick="chooseCharacter('girl')" tabindex="0"
              onkeydown="if(event.key==='Enter')chooseCharacter('girl')">
             <div class="char-img-wrap">
-                <img src="girl.png" alt="Девочка" onerror="this.parentElement.classList.add('no-image')">
+                <img src="girl.jpg" alt="Девочка" onerror="this.parentElement.classList.add('no-image')">
                 <span class="char-emoji">👧</span>
             </div>
             <p>Девочка</p>
@@ -1429,7 +1415,7 @@ function chooseCharacter(who) {
         const wrap = document.getElementById('mapCharacter');
         const img = document.getElementById('characterImg');
         if (!wrap || !img) return;
-        const src = who === 'girl' ? 'girl.png' : 'boy.png';
+        const src = who === 'girl' ? 'girl.jpg' : 'boy.jpg';
         img.src = src;
         img.onerror = () => {
             img.style.display = 'none';
@@ -1601,7 +1587,6 @@ function initMap() {
     gEl.appendChild(gMarkersEl);
     gEl.appendChild(gRouteEl);
 
-    // Фон-контур
     const bgPath = document.createElementNS(SVG_NS, "path");
     bgPath.setAttribute("d", "M60,140 Q120,90 220,120 L280,180 L320,170 L380,200 L450,190 L520,240 L560,300 L530,360 L460,380 L390,360 L320,340 L250,360 L180,400 L120,370 L80,300 Z");
     bgPath.setAttribute("fill", "#ffffff");
@@ -1612,7 +1597,6 @@ function initMap() {
     bgPath.setAttribute("pointer-events", "none");
     gEl.appendChild(bgPath);
 
-    // Связи
     regionLinks.forEach(([a, b]) => {
         const ca = centerOf(a), cb = centerOf(b);
         const line = document.createElementNS(SVG_NS, "line");
@@ -1622,7 +1606,6 @@ function initMap() {
         gLinksEl.appendChild(line);
     });
 
-    // Регионы
     russiaRegions.forEach(region => {
         const data = regionsData[region.name];
         if (!data) return;
@@ -1666,7 +1649,6 @@ function initMap() {
 
         gRegionsEl.appendChild(poly);
 
-        // Подпись
         const lines = region.short.split("\n");
         const label = document.createElementNS(SVG_NS, "text");
         label.setAttribute("x", cx + (region.labelX || 0));
@@ -1682,7 +1664,6 @@ function initMap() {
         });
         gRegionsEl.appendChild(label);
 
-        // Маркер-иконка
         const marker = document.createElementNS(SVG_NS, "g");
         marker.setAttribute("class", "region-marker");
         marker.dataset.forRegion = region.name;
@@ -1700,7 +1681,6 @@ function initMap() {
         marker.appendChild(ico);
         gMarkersEl.appendChild(marker);
 
-        // Пульс для high
         if (data.potential === "high") {
             for (let i = 0; i < 3; i++) {
                 const ring = document.createElementNS(SVG_NS, "circle");
@@ -1791,7 +1771,6 @@ function initMap() {
         updateTransform();
     }, { passive: false });
 
-    // Touch
     let lastDist = 0;
     svgEl.addEventListener("touchstart", (e) => {
         if (e.touches.length === 1) {
@@ -1823,7 +1802,6 @@ function initMap() {
     }, { passive: true });
     svgEl.addEventListener("touchend", () => { isPanning = false; lastDist = 0; }, { passive: true });
 
-    /* ===== Кнопки-действия ===== */
     document.getElementById('randomRegion').onclick = () => {
         const names = Object.keys(regionsData);
         const rnd = names[Math.floor(Math.random() * names.length)];
@@ -1840,7 +1818,6 @@ function initMap() {
         showToast(routesVisible ? '🔗 Связи включены' : '🔗 Связи выключены');
     };
 
-    /* ===== Легенда-фильтр ===== */
     document.querySelectorAll('.legend-item').forEach(item => {
         item.addEventListener('click', () => {
             const f = item.dataset.filter;
@@ -1860,7 +1837,6 @@ function initMap() {
     window._getScale = () => scale;
     window._getTranslate = () => ({ x: translateX, y: translateY });
 
-    /* ===== Навигация панели ===== */
     document.querySelectorAll(".nav-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             const view = btn.dataset.view;
