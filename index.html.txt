@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Хмель — зелёное золото России</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+
+    #screen-main {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 40px 20px;
+      background: #1a3c1a;
+      color: #fff;
+      box-sizing: border-box;
+    }
+
+    #screen-main h1 {
+      font-size: 48px;
+      margin: 0 0 16px;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      opacity: 0.8;
+      max-width: 700px;
+      margin-bottom: 40px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 16px 40px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.2s;
+      display: inline-block;
+    }
+
+    .btn-contacts {
+      background: transparent;
+      color: #fff;
+      border: 2px solid #fff;
+    }
+    .btn-contacts:hover { background: #fff; color: #1a3c1a; }
+
+    .btn-more {
+      background: #7cb342;
+      color: #fff;
+    }
+    .btn-more:hover { background: #558b2f; }
+
+    #screen-characters {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 40px 20px;
+      background: #1a3c1a;
+      color: #fff;
+      box-sizing: border-box;
+    }
+
+    #screen-characters h2 {
+      font-size: 36px;
+      margin-bottom: 50px;
+    }
+
+    .characters {
+      display: flex;
+      gap: 80px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .character {
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .character:hover {
+      transform: scale(1.08);
+    }
+    .character img {
+      width: 240px;
+      height: 240px;
+      object-fit: cover;
+      border-radius: 16px;
+      background: #2a5a2a;
+    }
+    .character p {
+      font-size: 22px;
+      margin-top: 16px;
+    }
+
+    /* Блок контактов */
+    #contacts {
+      min-height: 100vh;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 40px 20px;
+      background: #0f2a0f;
+      color: #fff;
+      box-sizing: border-box;
+    }
+    #contacts h2 { font-size: 36px; margin-bottom: 20px; }
+    #contacts p { font-size: 18px; margin: 8px 0; }
+    .back-btn {
+      margin-top: 30px;
+      padding: 12px 30px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 2px solid #fff;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+    }
+    .back-btn:hover { background: #fff; color: #1a3c1a; }
+  </style>
+</head>
+<body>
+
+  <!-- Экран 1: главный -->
+  <div id="screen-main">
+    <h1>Хмель — зелёное золото России</h1>
+    <p class="subtitle">Интерактивная карта терруаров по возделыванию хмеля и производству сырья</p>
+    <div class="buttons">
+      <button class="btn btn-contacts" onclick="showContacts()">Контакты</button>
+      <button class="btn btn-more" onclick="showCharacters()">Узнать больше</button>
+    </div>
+  </div>
+
+  <!-- Экран 2: выбор персонажа -->
+  <div id="screen-characters">
+    <h2>С кем хочешь отправиться в путешествие?</h2>
+    <div class="characters">
+      <div class="character" onclick="chooseCharacter('boy')">
+        <img src="boy.jpg" alt="Мальчик">
+        <p>Мальчик</p>
+      </div>
+      <div class="character" onclick="chooseCharacter('girl')">
+        <img src="girl.jpg" alt="Девочка">
+        <p>Девочка</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Экран 3: контакты -->
+  <div id="contacts">
+    <h2>Контакты</h2>
+    <p>Email: example@mail.ru</p>
+    <p>Телефон: +7 (999) 123-45-67</p>
+    <button class="back-btn" onclick="showMain()">Назад</button>
+  </div>
+
+  <script>
+    function showCharacters() {
+      document.getElementById('screen-main').style.display = 'none';
+      document.getElementById('screen-characters').style.display = 'flex';
+    }
+
+    function showContacts() {
+      document.getElementById('screen-main').style.display = 'none';
+      document.getElementById('contacts').style.display = 'flex';
+    }
+
+    function showMain() {
+      document.getElementById('contacts').style.display = 'none';
+      document.getElementById('screen-main').style.display = 'flex';
+    }
+
+    function chooseCharacter(who) {
+      // Передаём выбор в URL: ?character=boy или ?character=girl
+      window.location.href = 'https://fr0undi.github.io/Interactive_Map/?character=' + who;
+    }
+  </script>
+
+</body>
+</html>
