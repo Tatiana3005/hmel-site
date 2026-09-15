@@ -436,7 +436,6 @@ body {
     overflow: hidden;
 }
 
-/* Сетка-паттерн */
 .map-wrapper::before {
     content: '';
     position: absolute;
@@ -456,6 +455,7 @@ body {
     cursor: grab;
     position: relative;
     z-index: 1;
+    user-select: none;
 }
 #russiaMap:active { cursor: grabbing; }
 
@@ -484,7 +484,6 @@ body {
     opacity: 0.18;
     pointer-events: none;
 }
-.region.dimmed-label { opacity: 0.15; }
 
 /* === Подписи регионов === */
 .region-label {
@@ -493,7 +492,7 @@ body {
     font-weight: 800;
     fill: #ffffff;
     text-anchor: middle;
-    pointer-events: none;
+    pointer-events: none !important;
     paint-order: stroke;
     stroke: rgba(13, 43, 26, 0.9);
     stroke-width: 3px;
@@ -509,7 +508,7 @@ body {
 
 /* === Маркеры-иконки === */
 .region-marker {
-    pointer-events: none;
+    pointer-events: none !important;
     transition: opacity 0.3s;
 }
 .region-marker circle {
@@ -517,6 +516,7 @@ body {
     stroke: #1a4d2e;
     stroke-width: 1.5;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+    pointer-events: none;
 }
 .region-marker text {
     font-size: 12px;
@@ -526,12 +526,12 @@ body {
     user-select: none;
 }
 
-/* === Пульсирующие круги на высоком потенциале === */
+/* === Пульсирующие круги === */
 .pulse-ring {
     fill: none;
     stroke: var(--gold);
     stroke-width: 2;
-    pointer-events: none;
+    pointer-events: none !important;
     opacity: 0.7;
 }
 .pulse-ring.r1 { animation: pulseRing 2.5s ease-out infinite; transform-origin: center; transform-box: fill-box; }
@@ -549,21 +549,21 @@ body {
     stroke-width: 1.5;
     stroke-dasharray: 4 4;
     opacity: 0.35;
-    pointer-events: none;
+    pointer-events: none !important;
     animation: dashMove 20s linear infinite;
 }
 @keyframes dashMove {
     to { stroke-dashoffset: -200; }
 }
 
-/* === Маршрут от выбранного региона к столице === */
+/* === Маршрут === */
 .route-path {
     fill: none;
     stroke: var(--gold);
     stroke-width: 2.5;
     stroke-dasharray: 8 6;
     stroke-linecap: round;
-    pointer-events: none;
+    pointer-events: none !important;
     filter: drop-shadow(0 0 6px rgba(212,165,58,0.8));
     animation: dashRoute 1s linear infinite;
 }
@@ -575,7 +575,7 @@ body {
     stroke: #fff;
     stroke-width: 2;
     filter: drop-shadow(0 0 8px rgba(212,165,58,0.9));
-    pointer-events: none;
+    pointer-events: none !important;
 }
 
 /* === Тултип === */
@@ -588,13 +588,13 @@ body {
     font-size: 12.5px;
     color: var(--text);
     box-shadow: var(--shadow-lg);
-    pointer-events: none;
+    pointer-events: none !important;
     z-index: 10;
     opacity: 0;
     transform: translate(-50%, -100%) translateY(-12px);
     transition: opacity 0.2s;
     white-space: nowrap;
-    max-width: 240px;
+    max-width: 260px;
 }
 .map-tooltip.visible { opacity: 1; }
 .map-tooltip strong {
@@ -745,7 +745,7 @@ body {
     border-bottom-color: var(--gold);
 }
 
-/* === Зум-контролы === */
+/* === Зум === */
 .zoom-controls {
     position: absolute;
     bottom: 24px;
@@ -787,7 +787,7 @@ body {
     margin: 2px 4px;
 }
 
-/* === Панель управления (снизу) === */
+/* === Нижняя панель === */
 .map-bottom-bar {
     position: absolute;
     bottom: 24px;
@@ -824,7 +824,7 @@ body {
 }
 .map-btn:active { transform: translateY(0); }
 
-/* === Координаты + масштаб === */
+/* === Координаты === */
 .map-status {
     position: absolute;
     bottom: 24px;
@@ -890,7 +890,7 @@ body {
     pointer-events: none;
 }
 
-/* === Подсказка о свайпе === */
+/* === Подсказка === */
 .map-hint {
     position: absolute;
     top: 50%;
@@ -1298,10 +1298,8 @@ body {
                     </defs>
                 </svg>
 
-                <!-- Тултип -->
                 <div class="map-tooltip" id="tooltip"></div>
 
-                <!-- Легенда-фильтр -->
                 <div class="legend" id="legend">
                     <h3>
                         Потенциал
@@ -1321,12 +1319,10 @@ body {
                     </div>
                 </div>
 
-                <!-- Компас -->
                 <div class="compass" title="Компас (декоративный)">
                     <div class="compass-needle" id="compassNeedle"></div>
                 </div>
 
-                <!-- Зум -->
                 <div class="zoom-controls">
                     <button id="zoomIn" title="Приблизить">+</button>
                     <button id="zoomOut" title="Отдалить">−</button>
@@ -1334,29 +1330,24 @@ body {
                     <button id="resetView" title="Сброс вида">⟲</button>
                 </div>
 
-                <!-- Кнопки-действия -->
                 <div class="map-bottom-bar">
                     <button class="map-btn" id="randomRegion" title="Случайный регион">🎲 Случайный</button>
                     <button class="map-btn" id="fitAll" title="Показать всю карту">🗺️ Вся карта</button>
                     <button class="map-btn" id="toggleRoutes" title="Показать/скрыть связи">🔗 Связи</button>
                 </div>
 
-                <!-- Координаты и масштаб -->
                 <div class="map-status">
                     <span id="coords">x: 0 · y: 0</span>
                     <span id="zoomLevel">× 1.0</span>
                 </div>
 
-                <!-- Мини-карта -->
                 <div class="minimap" id="minimap" title="Нажмите, чтобы переместиться">
                     <span class="mini-title">Обзор</span>
                     <svg viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" id="minimapSvg"></svg>
                 </div>
 
-                <!-- Подсказка -->
                 <div class="map-hint" id="mapHint">👆 Свайп · щипок · клик по региону</div>
 
-                <!-- Персонаж -->
                 <div class="map-character" id="mapCharacter">
                     <img id="characterImg" src="" alt="Персонаж">
                     <div class="speech" id="characterSpeech">Привет! Выбери регион 👆</div>
@@ -1407,6 +1398,7 @@ createFireflies();
 let toastTimer;
 function showToast(text) {
     const t = document.getElementById('toast');
+    if (!t) return;
     t.textContent = text;
     t.classList.add('show');
     clearTimeout(toastTimer);
@@ -1418,7 +1410,8 @@ function showToast(text) {
    ============================================ */
 function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    const el = document.getElementById(id);
+    if (el) el.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (id === 'screen-map') initMap();
 }
@@ -1429,12 +1422,13 @@ function showScreen(id) {
 let currentCharacter = null;
 function chooseCharacter(who) {
     currentCharacter = who;
-    localStorage.setItem('character', who);
+    try { localStorage.setItem('character', who); } catch (e) {}
     showScreen('screen-map');
     showToast(who === 'girl' ? '👧 Девочка отправляется в путь!' : '👦 Мальчик отправляется в путь!');
     setTimeout(() => {
         const wrap = document.getElementById('mapCharacter');
         const img = document.getElementById('characterImg');
+        if (!wrap || !img) return;
         const src = who === 'girl' ? 'girl.png' : 'boy.png';
         img.src = src;
         img.onerror = () => {
@@ -1511,7 +1505,6 @@ const russiaRegions = [
     { name: "Алтайский край",        short: "Алтайский\nкрай",        points: "450,290 520,280 545,330 500,355 445,330", labelX: 0, labelY: 0, iconDY: -16 }
 ];
 
-/* Связи между регионами */
 const regionLinks = [
     ["Республика Марий Эл", "Республика Чувашия"],
     ["Республика Чувашия", "Республика Татарстан"],
@@ -1524,41 +1517,91 @@ const regionLinks = [
     ["Алтайский край", "Республика Башкортостан"]
 ];
 
-const CAPITAL = { x: 130, y: 235 }; // условная столица (Москва)
+const CAPITAL = { x: 130, y: 235 };
 
 /* ============================================
-   ИНИЦИАЛИЗАЦИЯ КАРТЫ
+   ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ КАРТЫ
    ============================================ */
+const SVG_NS = "http://www.w3.org/2000/svg";
 let mapInitialized = false;
 let svgEl, gEl, gLinksEl, gRegionsEl, gMarkersEl, gRouteEl;
 let currentFilter = null;
 let routesVisible = true;
 let regionCenters = {};
 
-const SVG_NS = "http://www.w3.org/2000/svg";
+/* ============================================
+   ВСПОМОГАТЕЛЬНОЕ: центр региона
+   ============================================ */
+function centerOf(name) {
+    if (regionCenters[name]) return regionCenters[name];
+    const r = russiaRegions.find(x => x.name === name);
+    if (!r) return { x: 0, y: 0 };
+    const coords = r.points.split(" ").map(p => p.split(",").map(Number));
+    return {
+        x: coords.reduce((s, p) => s + p[0], 0) / coords.length,
+        y: coords.reduce((s, p) => s + p[1], 0) / coords.length
+    };
+}
 
+/* ============================================
+   ТУЛТИП
+   ============================================ */
+function showTooltip(e, name) {
+    const tooltip = document.getElementById('tooltip');
+    if (!tooltip) return;
+    const data = regionsData[name];
+    if (!data) return;
+    const labels = { high: "Высокий потенциал", medium: "Средний потенциал", low: "Низкий потенциал" };
+    tooltip.innerHTML = `
+        <strong>${name}</strong>
+        🌾 ${data.hops} · 🏡 ${data.farms} хоз.
+        <br><span class="badge ${data.potential}">${labels[data.potential]}</span>
+    `;
+    tooltip.classList.add('visible');
+    moveTooltip(e);
+}
+
+function moveTooltip(e) {
+    const tooltip = document.getElementById('tooltip');
+    if (!tooltip) return;
+    const wrapper = svgEl ? svgEl.closest('.map-wrapper') : null;
+    if (!wrapper) return;
+    const rect = wrapper.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    tooltip.style.left = x + 'px';
+    tooltip.style.top  = (y - 8) + 'px';
+}
+
+function hideTooltip() {
+    const tooltip = document.getElementById('tooltip');
+    if (tooltip) tooltip.classList.remove('visible');
+}
+
+/* ============================================
+   ИНИЦИАЛИЗАЦИЯ КАРТЫ
+   ============================================ */
 function initMap() {
     if (mapInitialized) return;
     mapInitialized = true;
 
     svgEl = document.getElementById("russiaMap");
+    if (!svgEl) return;
 
-    // Основная группа с трансформацией
     gEl = document.createElementNS(SVG_NS, "g");
     gEl.setAttribute("id", "mapGroup");
     svgEl.appendChild(gEl);
 
-    // Слои (порядок важен!)
-    gLinksEl   = document.createElementNS(SVG_NS, "g"); gLinksEl.setAttribute("id", "linksLayer");
-    gRegionsEl = document.createElementNS(SVG_NS, "g"); gRegionsEl.setAttribute("id", "regionsLayer");
-    gMarkersEl = document.createElementNS(SVG_NS, "g"); gMarkersEl.setAttribute("id", "markersLayer");
-    gRouteEl   = document.createElementNS(SVG_NS, "g"); gRouteEl.setAttribute("id", "routeLayer");
+    gLinksEl   = document.createElementNS(SVG_NS, "g");
+    gRegionsEl = document.createElementNS(SVG_NS, "g");
+    gMarkersEl = document.createElementNS(SVG_NS, "g");
+    gRouteEl   = document.createElementNS(SVG_NS, "g");
     gEl.appendChild(gLinksEl);
     gEl.appendChild(gRegionsEl);
     gEl.appendChild(gMarkersEl);
     gEl.appendChild(gRouteEl);
 
-    // Фон-контур России
+    // Фон-контур
     const bgPath = document.createElementNS(SVG_NS, "path");
     bgPath.setAttribute("d", "M60,140 Q120,90 220,120 L280,180 L320,170 L380,200 L450,190 L520,240 L560,300 L530,360 L460,380 L390,360 L320,340 L250,360 L180,400 L120,370 L80,300 Z");
     bgPath.setAttribute("fill", "#ffffff");
@@ -1566,9 +1609,10 @@ function initMap() {
     bgPath.setAttribute("stroke", "#c5d8cc");
     bgPath.setAttribute("stroke-width", "1.5");
     bgPath.setAttribute("stroke-dasharray", "6,6");
+    bgPath.setAttribute("pointer-events", "none");
     gEl.appendChild(bgPath);
 
-    // Рисуем связи
+    // Связи
     regionLinks.forEach(([a, b]) => {
         const ca = centerOf(a), cb = centerOf(b);
         const line = document.createElementNS(SVG_NS, "line");
@@ -1578,9 +1622,11 @@ function initMap() {
         gLinksEl.appendChild(line);
     });
 
-    // Рисуем регионы
+    // Регионы
     russiaRegions.forEach(region => {
         const data = regionsData[region.name];
+        if (!data) return;
+
         const coords = region.points.split(" ").map(p => p.split(",").map(Number));
         const cx = coords.reduce((s, p) => s + p[0], 0) / coords.length;
         const cy = coords.reduce((s, p) => s + p[1], 0) / coords.length;
@@ -1594,12 +1640,28 @@ function initMap() {
         poly.setAttribute("tabindex", "0");
         poly.setAttribute("filter", "url(#regionShadow)");
 
-        poly.addEventListener("click", () => selectRegion(region.name));
+        poly.addEventListener("click", (e) => {
+            e.stopPropagation();
+            selectRegion(region.name);
+        });
         poly.addEventListener("mouseenter", (e) => showTooltip(e, region.name));
         poly.addEventListener("mousemove", moveTooltip);
         poly.addEventListener("mouseleave", hideTooltip);
+        poly.addEventListener("focus", () => {
+            const wrapper = svgEl.closest('.map-wrapper');
+            if (!wrapper) return;
+            const rect = wrapper.getBoundingClientRect();
+            showTooltip({
+                clientX: rect.left + (cx / 1000) * rect.width,
+                clientY: rect.top  + (cy / 600)  * rect.height
+            }, region.name);
+        });
+        poly.addEventListener("blur", hideTooltip);
         poly.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectRegion(region.name); }
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                selectRegion(region.name);
+            }
         });
 
         gRegionsEl.appendChild(poly);
@@ -1638,7 +1700,7 @@ function initMap() {
         marker.appendChild(ico);
         gMarkersEl.appendChild(marker);
 
-        // Пульсация для high
+        // Пульс для high
         if (data.potential === "high") {
             for (let i = 0; i < 3; i++) {
                 const ring = document.createElementNS(SVG_NS, "circle");
@@ -1651,19 +1713,17 @@ function initMap() {
     });
 
     updateLegendCounts();
-
-    /* ===== Обновление мини-карты ===== */
     buildMinimap();
 
     /* ===== Зум / пан ===== */
     let scale = 1, translateX = 0, translateY = 0;
     let isPanning = false, startX, startY;
-    let targetScale = 1, targetX = 0, targetY = 0;
     let animating = false;
 
     function updateTransform() {
         gEl.setAttribute("transform", `translate(${translateX}, ${translateY}) scale(${scale})`);
-        document.getElementById('zoomLevel').textContent = '× ' + scale.toFixed(1);
+        const zEl = document.getElementById('zoomLevel');
+        if (zEl) zEl.textContent = '× ' + scale.toFixed(1);
         updateMiniViewport();
     }
 
@@ -1697,23 +1757,30 @@ function initMap() {
 
     svgEl.addEventListener("mousedown", (e) => {
         if (animating) return;
+        if (e.target.closest && e.target.closest('.zoom-controls, .legend, .compass, .minimap, .map-bottom-bar')) return;
         isPanning = true;
         startX = e.clientX - translateX;
         startY = e.clientY - translateY;
         svgEl.style.cursor = 'grabbing';
     });
+
     svgEl.addEventListener("mousemove", (e) => {
-        // Координаты в SVG
         const pt = svgEl.createSVGPoint();
         pt.x = e.clientX; pt.y = e.clientY;
-        const loc = pt.matrixTransform(gEl.getScreenCTM().inverse());
-        document.getElementById('coords').textContent = `x: ${Math.round(loc.x)} · y: ${Math.round(loc.y)}`;
-
+        const m = gEl.getScreenCTM();
+        if (m) {
+            try {
+                const loc = pt.matrixTransform(m.inverse());
+                const cEl = document.getElementById('coords');
+                if (cEl) cEl.textContent = `x: ${Math.round(loc.x)} · y: ${Math.round(loc.y)}`;
+            } catch (err) {}
+        }
         if (!isPanning || animating) return;
         translateX = e.clientX - startX;
         translateY = e.clientY - startY;
         updateTransform();
     });
+
     svgEl.addEventListener("mouseup", () => { isPanning = false; svgEl.style.cursor = 'grab'; });
     svgEl.addEventListener("mouseleave", () => { isPanning = false; svgEl.style.cursor = 'grab'; });
 
@@ -1782,17 +1849,16 @@ function initMap() {
             } else {
                 currentFilter = f;
                 applyFilter();
+                document.querySelectorAll('.legend-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
                 document.getElementById('legend').classList.add('filtered');
             }
         });
     });
 
-    /* ===== Вспомогательные функции (внутри) ===== */
     window._smoothTo = smoothTo;
     window._getScale = () => scale;
     window._getTranslate = () => ({ x: translateX, y: translateY });
-    window._setTranslate = (x, y) => { translateX = x; translateY = y; updateTransform(); };
 
     /* ===== Навигация панели ===== */
     document.querySelectorAll(".nav-btn").forEach(btn => {
@@ -1838,7 +1904,6 @@ function initMap() {
         });
     });
 
-    // Esc — выход
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && document.getElementById('screen-map').classList.contains('active')) {
             showScreen('screen-main');
@@ -1847,62 +1912,19 @@ function initMap() {
 }
 
 /* ============================================
-   ЦЕНТР РЕГИОНА
-   ============================================ */
-function centerOf(name) {
-    if (regionCenters[name]) return regionCenters[name];
-    const r = russiaRegions.find(x => x.name === name);
-    if (!r) return { x: 0, y: 0 };
-    const coords = r.points.split(" ").map(p => p.split(",").map(Number));
-    return {
-        x: coords.reduce((s, p) => s + p[0], 0) / coords.length,
-        y: coords.reduce((s, p) => s + p[1], 0) / coords.length
-    };
-}
-
-/* ============================================
-   ТУЛТИП
-   ============================================ */
-function showTooltip(e, name) {
-    const tooltip = document.getElementById('tooltip');
-    const data = regionsData[name];
-    const wrap = e.currentTarget.closest('.map-wrapper').getBoundingClientRect();
-    const labels = { high: "Высокий потенциал", medium: "Средний потенциал", low: "Низкий потенциал" };
-    tooltip.innerHTML = `
-        <strong>${name}</strong>
-        🌾 ${data.hops} · 🏡 ${data.farms} хоз.
-        <br><span class="badge ${data.potential}">${labels[data.potential]}</span>
-    `;
-    tooltip.classList.add('visible');
-    moveTooltip(e);
-}
-function moveTooltip(e) {
-    const tooltip = document.getElementById('tooltip');
-    const wrap = e.currentTarget.closest('.map-wrapper').getBoundingClientRect();
-    tooltip.style.left = (e.clientX - wrap.left) + 'px';
-    tooltip.style.top  = (e.clientY - wrap.top - 8) + 'px';
-}
-function hideTooltip() {
-    document.getElementById('tooltip').classList.remove('visible');
-}
-
-/* ============================================
    ВЫБОР РЕГИОНА
    ============================================ */
 function selectRegion(name) {
-    // Сброс выделения
     document.querySelectorAll(".region").forEach(el => el.classList.remove("selected"));
     const el = document.querySelector(`.region[data-name="${name}"]`);
     if (el) el.classList.add("selected");
 
-    // Плавный полёт к региону
     const c = centerOf(name);
     const targetScale = 1.8;
     const tx = 500 - c.x * targetScale;
     const ty = 300 - c.y * targetScale;
     if (window._smoothTo) window._smoothTo(tx, ty, targetScale, 700);
 
-    // Маршрут от региона к столице
     if (gRouteEl) {
         gRouteEl.innerHTML = '';
         const line = document.createElementNS(SVG_NS, "line");
@@ -1918,7 +1940,6 @@ function selectRegion(name) {
         gRouteEl.appendChild(cap);
     }
 
-    // Речь персонажа
     const speech = document.getElementById('characterSpeech');
     if (speech) {
         const data = regionsData[name];
@@ -1926,7 +1947,6 @@ function selectRegion(name) {
         speech.textContent = `${name}: ${labels[data.potential]} ${potentialIcons[data.potential]}`;
     }
 
-    // Панель
     const data = regionsData[name];
     const potentialLabels = { high: "Высокий", medium: "Средний", low: "Низкий" };
     const fillPercent = { high: 100, medium: 60, low: 30 };
@@ -1951,14 +1971,11 @@ function selectRegion(name) {
 }
 
 /* ============================================
-   ФИЛЬТР ПО ЛЕГЕНДЕ
+   ФИЛЬТР
    ============================================ */
 function applyFilter() {
     document.querySelectorAll('.region').forEach(el => {
-        if (!currentFilter) {
-            el.classList.remove('dimmed');
-            return;
-        }
+        if (!currentFilter) { el.classList.remove('dimmed'); return; }
         if (el.dataset.potential === currentFilter) el.classList.remove('dimmed');
         else el.classList.add('dimmed');
     });
@@ -1976,20 +1993,21 @@ function applyFilter() {
 function resetFilter() {
     currentFilter = null;
     document.querySelectorAll('.legend-item').forEach(i => i.classList.remove('active'));
-    document.getElementById('legend').classList.remove('filtered');
+    const leg = document.getElementById('legend');
+    if (leg) leg.classList.remove('filtered');
     applyFilter();
     showToast('🎨 Фильтр сброшен');
 }
 
-/* ============================================
-   СЧЁТЧИКИ ЛЕГЕНДЫ
-   ============================================ */
 function updateLegendCounts() {
     const counts = { high: 0, medium: 0, low: 0 };
     Object.values(regionsData).forEach(r => counts[r.potential]++);
-    document.getElementById('count-high').textContent = counts.high;
-    document.getElementById('count-medium').textContent = counts.medium;
-    document.getElementById('count-low').textContent = counts.low;
+    const h = document.getElementById('count-high');
+    const m = document.getElementById('count-medium');
+    const l = document.getElementById('count-low');
+    if (h) h.textContent = counts.high;
+    if (m) m.textContent = counts.medium;
+    if (l) l.textContent = counts.low;
 }
 
 /* ============================================
@@ -1997,13 +2015,13 @@ function updateLegendCounts() {
    ============================================ */
 function buildMinimap() {
     const svg = document.getElementById('minimapSvg');
+    if (!svg) return;
     russiaRegions.forEach(r => {
         const poly = document.createElementNS(SVG_NS, "polygon");
         poly.setAttribute("points", r.points);
         poly.setAttribute("class", "mini-region");
         svg.appendChild(poly);
     });
-    // Рамка видимой области
     const viewport = document.createElementNS(SVG_NS, "rect");
     viewport.setAttribute("class", "mini-viewport");
     viewport.setAttribute("id", "miniViewport");
@@ -2013,7 +2031,6 @@ function buildMinimap() {
     viewport.setAttribute("rx", 4);
     svg.appendChild(viewport);
 
-    // Клик по мини-карте
     document.getElementById('minimap').addEventListener('click', (e) => {
         const rect = svg.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width) * 1000;
@@ -2030,7 +2047,6 @@ function updateMiniViewport() {
     if (!viewport) return;
     const scale = window._getScale ? window._getScale() : 1;
     const t = window._getTranslate ? window._getTranslate() : { x: 0, y: 0 };
-    // Видимая область в координатах SVG (1000x600)
     const vw = 1000 / scale;
     const vh = 600 / scale;
     const vx = -t.x / scale;
@@ -2042,7 +2058,7 @@ function updateMiniViewport() {
 }
 
 /* ============================================
-   КОМПАС — лёгкое покачивание
+   КОМПАС
    ============================================ */
 setInterval(() => {
     const needle = document.getElementById('compassNeedle');
