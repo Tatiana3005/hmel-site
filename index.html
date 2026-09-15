@@ -4,57 +4,93 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Хмель — зелёное золото России</title>
+
+<!-- Шрифты -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700;900&display=swap" rel="stylesheet">
+
 <style>
-* { box-sizing: border-box; }
+/* ============================================
+   БАЗА
+   ============================================ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-    --green-dark: #1a4d2e;
-    --green-mid:  #2d7a4f;
-    --green-light:#4caf50;
-    --gold: #d4a53a;
-    --panel-bg: rgba(255, 255, 255, 0.9);
-    --text: #1e2a23;
-    --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --green-900: #0d2b1a;
+    --green-800: #14401f;
+    --green-700: #1a4d2e;
+    --green-600: #2d7a4f;
+    --green-500: #4caf50;
+    --green-300: #7bc47f;
+    --green-100: #c5e0c8;
+    --gold:      #d4a53a;
+    --gold-light:#f0c96a;
+    --text:      #1e2a23;
+    --text-soft: #4a5550;
+    --panel-bg:  rgba(255, 255, 255, 0.92);
+    --panel-bg-strong: rgba(255, 255, 255, 0.97);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow:    0 8px 30px rgba(0,0,0,0.12);
+    --shadow-lg: 0 20px 50px rgba(0,0,0,0.18);
+    --radius:    16px;
+    --radius-sm: 10px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {
-    margin: 0;
-    font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
     overflow-x: hidden;
     color: #fff;
+    background: #0a1a10;
 }
 
 /* ============================================
-   ФОН — КАРТИНКА ХМЕЛЯ + СВЕТЛЯЧКИ
+   ФОН + СВЕТЛЯЧКИ
    ============================================ */
 .bg {
     position: fixed;
     inset: 0;
-    z-index: -2;
+    z-index: -3;
     background: url('background.jpg') center center / cover no-repeat fixed;
 }
 .bg::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(rgba(15, 42, 15, 0.65), rgba(26, 60, 26, 0.8));
+    background:
+        radial-gradient(ellipse at 30% 20%, rgba(139, 195, 74, 0.15), transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(212, 165, 58, 0.12), transparent 50%),
+        linear-gradient(160deg, rgba(13, 43, 26, 0.75) 0%, rgba(20, 64, 31, 0.88) 100%);
 }
 
 .fireflies {
     position: fixed;
     inset: 0;
-    z-index: -1;
+    z-index: -2;
     pointer-events: none;
-    background-image:
-        radial-gradient(2px 2px at 20% 30%, rgba(255,255,200,0.6), transparent),
-        radial-gradient(2px 2px at 70% 60%, rgba(255,255,200,0.5), transparent),
-        radial-gradient(2px 2px at 40% 80%, rgba(255,255,200,0.4), transparent),
-        radial-gradient(2px 2px at 85% 20%, rgba(255,255,200,0.5), transparent),
-        radial-gradient(2px 2px at 10% 70%, rgba(255,255,200,0.4), transparent);
-    animation: flicker 4s ease-in-out infinite alternate;
+    overflow: hidden;
 }
-@keyframes flicker {
-    from { opacity: 0.4; }
+.firefly {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255, 255, 200, 0.9);
+    box-shadow:
+        0 0 8px 2px rgba(255, 255, 200, 0.7),
+        0 0 20px 4px rgba(212, 165, 58, 0.4);
+    animation: drift linear infinite, glow ease-in-out infinite alternate;
+}
+@keyframes drift {
+    0%   { transform: translate(0, 0); }
+    25%  { transform: translate(30px, -40px); }
+    50%  { transform: translate(-20px, -80px); }
+    75%  { transform: translate(40px, -30px); }
+    100% { transform: translate(0, 0); }
+}
+@keyframes glow {
+    from { opacity: 0.3; }
     to   { opacity: 1; }
 }
 
@@ -74,78 +110,127 @@ body {
 .screen.active { display: flex; }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(24px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ============================================
    ГЛАВНЫЙ ЭКРАН
    ============================================ */
+.logo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    background: rgba(212, 165, 58, 0.15);
+    border: 1px solid rgba(212, 165, 58, 0.4);
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+}
+.logo-badge::before {
+    content: '🌿';
+    font-size: 18px;
+}
+
 #screen-main h1 {
-    font-size: 52px;
-    margin: 0 0 20px;
-    text-shadow: 0 4px 20px rgba(0,0,0,0.7);
-    letter-spacing: 1px;
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 900;
+    line-height: 1.05;
+    margin: 0 0 24px;
+    background: linear-gradient(135deg, #fff 0%, #e8f5e9 40%, var(--gold-light) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 40px rgba(0,0,0,0.5);
+    letter-spacing: -1px;
 }
 .subtitle {
-    font-size: 20px;
-    opacity: 0.95;
-    max-width: 700px;
+    font-size: clamp(15px, 2vw, 20px);
+    opacity: 0.92;
+    max-width: 640px;
     margin-bottom: 50px;
-    line-height: 1.5;
+    line-height: 1.6;
+    color: #d8e8dd;
     text-shadow: 0 2px 10px rgba(0,0,0,0.6);
 }
+
 .buttons {
     display: flex;
-    gap: 20px;
+    gap: 18px;
     flex-wrap: wrap;
     justify-content: center;
 }
 .btn {
-    padding: 16px 42px;
-    font-size: 18px;
+    padding: 16px 40px;
+    font-size: 16px;
     border-radius: 50px;
     border: none;
     cursor: pointer;
     text-decoration: none;
-    transition: all 0.3s;
+    transition: var(--transition);
     font-family: inherit;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
 }
 .btn-contacts {
     background: rgba(0,0,0,0.35);
     color: #fff;
-    border: 2px solid rgba(255,255,255,0.8);
-    backdrop-filter: blur(6px);
+    border: 2px solid rgba(255,255,255,0.6);
+    backdrop-filter: blur(10px);
 }
 .btn-contacts:hover {
     background: #fff;
-    color: #1a3c1a;
+    color: var(--green-800);
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+    border-color: #fff;
 }
 .btn-more {
-    background: linear-gradient(135deg, #8bc34a, #558b2f);
+    background: linear-gradient(135deg, #9ccc65, #558b2f);
     color: #fff;
-    box-shadow: 0 6px 20px rgba(124,179,66,0.5);
+    box-shadow: 0 8px 25px rgba(124,179,66,0.5);
+    position: relative;
+    overflow: hidden;
+}
+.btn-more::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+    transition: left 0.6s;
 }
 .btn-more:hover {
     transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 12px 30px rgba(124,179,66,0.7);
+    box-shadow: 0 15px 35px rgba(124,179,66,0.7);
 }
+.btn-more:hover::after { left: 100%; }
 
 /* ============================================
    ЭКРАН ВЫБОРА ПЕРСОНАЖА
    ============================================ */
 #screen-characters h2 {
-    font-size: 40px;
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(22px, 3.5vw, 38px);
+    font-weight: 700;
     margin-bottom: 60px;
     text-shadow: 0 4px 20px rgba(0,0,0,0.7);
+    color: #fff;
+    max-width: 800px;
 }
 .characters {
     display: flex;
-    gap: 100px;
+    gap: 80px;
     flex-wrap: wrap;
     justify-content: center;
 }
@@ -155,36 +240,45 @@ body {
     text-align: center;
     position: relative;
 }
-
-/* Контейнер под картинку (для заглушки-эмодзи) */
 .char-img-wrap {
-    width: 260px;
-    height: 260px;
+    width: 240px;
+    height: 320px;
     border-radius: 24px;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(4px);
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(6px);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
     animation: float 4s ease-in-out infinite;
-    filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
-    transition: all 0.4s;
+    filter: drop-shadow(0 15px 35px rgba(0,0,0,0.5));
+    transition: var(--transition);
 }
 .character:nth-child(2) .char-img-wrap { animation-delay: 1s; }
 
+.char-img-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 20%, rgba(139,195,74,0.25), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s;
+    pointer-events: none;
+}
 .char-img-wrap img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    padding: 16px;
+    padding: 12px;
     display: block;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.4s;
 }
-
-/* Эмодзи-заглушка, если картинки нет */
 .char-emoji {
-    font-size: 140px;
+    font-size: 130px;
     display: none;
     line-height: 1;
     user-select: none;
@@ -194,34 +288,80 @@ body {
 
 @keyframes float {
     0%, 100% { transform: translateY(0); }
-    50%      { transform: translateY(-14px); }
+    50%      { transform: translateY(-16px); }
 }
-.character:hover { transform: scale(1.08); }
+.character:hover { transform: scale(1.06); }
 .character:hover .char-img-wrap {
-    background: rgba(255,255,255,0.2);
-    box-shadow: 0 0 40px rgba(139,195,74,0.7);
+    background: rgba(255,255,255,0.14);
+    border-color: rgba(212, 165, 58, 0.7);
+    box-shadow: 0 0 50px rgba(139,195,74,0.7);
 }
+.character:hover .char-img-wrap::before { opacity: 1; }
+.character:hover .char-img-wrap img { transform: scale(1.05); }
 .character p {
-    font-size: 24px;
-    margin-top: 20px;
-    font-weight: 600;
+    font-size: 22px;
+    margin-top: 22px;
+    font-weight: 700;
     letter-spacing: 0.5px;
     text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+    color: #fff;
 }
+.character p::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 2px;
+    background: var(--gold);
+    margin: 8px auto 0;
+    transition: width 0.3s;
+}
+.character:hover p::after { width: 60px; }
 
 /* ============================================
    ЭКРАН КОНТАКТОВ
    ============================================ */
+#contacts {
+    text-align: center;
+}
 #contacts h2 {
-    font-size: 40px;
-    margin-bottom: 30px;
+    font-family: 'Unbounded', sans-serif;
+    font-size: clamp(28px, 4vw, 44px);
+    margin-bottom: 40px;
     text-shadow: 0 4px 20px rgba(0,0,0,0.7);
 }
-#contacts p {
-    font-size: 20px;
-    margin: 10px 0;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+.contact-card {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius);
+    padding: 40px 60px;
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-lg);
+    max-width: 460px;
+    width: 100%;
 }
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 17px;
+    color: #e8f1ea;
+}
+.contact-item:last-child { border-bottom: none; }
+.contact-item .icon {
+    font-size: 24px;
+    width: 40px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.contact-item a {
+    color: var(--gold-light);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.contact-item a:hover { color: #fff; }
+
 .back-btn {
     margin-top: 40px;
     padding: 14px 36px;
@@ -231,21 +371,25 @@ body {
     background: rgba(0,0,0,0.35);
     color: #fff;
     cursor: pointer;
-    transition: 0.3s;
+    transition: var(--transition);
     font-family: inherit;
-    font-weight: 600;
-    backdrop-filter: blur(6px);
+    font-weight: 700;
+    backdrop-filter: blur(10px);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
 }
 .back-btn:hover {
     background: #fff;
-    color: #1a3c1a;
+    color: var(--green-800);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.4);
 }
 
 /* ============================================
    ЭКРАН КАРТЫ
    ============================================ */
 #screen-map {
-    min-height: 100vh;
     display: none;
     flex-direction: column;
     padding: 0;
@@ -253,257 +397,609 @@ body {
     align-items: stretch;
     justify-content: flex-start;
     color: var(--text);
+    min-height: 100vh;
 }
 #screen-map.active { display: flex; }
 
 .header {
     background: linear-gradient(135deg,
-                rgba(26, 77, 46, 0.92),
-                rgba(45, 122, 79, 0.92));
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+                rgba(13, 43, 26, 0.95),
+                rgba(26, 77, 46, 0.95));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     color: #fff;
-    padding: 18px 32px;
+    padding: 16px 32px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: var(--shadow);
+    box-shadow: 0 4px 25px rgba(0,0,0,0.25);
     flex-wrap: wrap;
     gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(212, 165, 58, 0.25);
 }
 .logo { display: flex; align-items: center; gap: 12px; }
-.logo-icon { font-size: 32px; }
-.logo h1 { font-size: 20px; font-weight: 600; letter-spacing: 0.5px; margin: 0; }
-.nav { display: flex; gap: 8px; }
-.nav-btn {
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 8px 18px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s;
-    font-family: inherit;
+.logo-icon { font-size: 28px; filter: drop-shadow(0 0 8px rgba(139,195,74,0.6)); }
+.logo h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin: 0;
+    background: linear-gradient(135deg, #fff, var(--gold-light));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
-.nav-btn:hover { background: rgba(255, 255, 255, 0.25); }
-.nav-btn.active {
-    background: var(--gold);
-    border-color: var(--gold);
-    color: var(--green-dark);
+.nav { display: flex; gap: 6px; flex-wrap: wrap; }
+.nav-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 9px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13.5px;
     font-weight: 600;
+    transition: var(--transition);
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+.nav-btn.active {
+    background: linear-gradient(135deg, var(--gold), #b8901f);
+    border-color: var(--gold);
+    color: var(--green-900);
+    box-shadow: 0 4px 15px rgba(212, 165, 58, 0.5);
 }
 
 .main {
     flex: 1;
     display: grid;
-    grid-template-columns: 1fr 380px;
+    grid-template-columns: 1fr 400px;
     gap: 20px;
     padding: 20px;
-    max-width: 1600px;
+    max-width: 1700px;
     width: 100%;
     margin: 0 auto;
 }
 
 .map-container {
-    background: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 12px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: var(--radius);
     box-shadow: var(--shadow);
     overflow: hidden;
     position: relative;
+    border: 1px solid rgba(255,255,255,0.6);
 }
 .map-wrapper {
     position: relative;
     width: 100%;
     height: 100%;
-    min-height: 600px;
-    background: radial-gradient(circle at 50% 50%,
-                rgba(232, 241, 234, 0.9),
-                rgba(213, 230, 217, 0.95));
+    min-height: 620px;
+    background:
+        radial-gradient(circle at 50% 50%, #f0f7f2 0%, #dce9e0 100%);
 }
+
+/* Сетка-паттерн */
+.map-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(45,122,79,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(45,122,79,0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+}
+
 #russiaMap {
     width: 100%;
     height: 100%;
     display: block;
     cursor: grab;
+    position: relative;
+    z-index: 1;
 }
 #russiaMap:active { cursor: grabbing; }
 
 .region {
     stroke: #ffffff;
-    stroke-width: 0.8;
+    stroke-width: 1;
     cursor: pointer;
-    transition: opacity 0.2s, filter 0.2s;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));
 }
-.region:hover { filter: brightness(1.15); stroke-width: 1.5; }
-.region.high   { fill: #2d7a4f; }
-.region.medium { fill: #7bc47f; }
-.region.low    { fill: #c5e0c8; }
+.region:hover {
+    filter: brightness(1.15) drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+    stroke-width: 2;
+}
+.region.high   { fill: url(#gradHigh); }
+.region.medium { fill: url(#gradMedium); }
+.region.low    { fill: url(#gradLow); }
 .region.selected {
     stroke: var(--gold);
-    stroke-width: 2.5;
-    filter: brightness(1.2);
+    stroke-width: 3;
+    filter: brightness(1.2) drop-shadow(0 6px 18px rgba(212,165,58,0.5));
 }
 
-/* Подписи областей на карте */
+/* Точка-пульс на выбранном регионе */
+.pulse-dot {
+    fill: var(--gold);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.pulse-dot.visible { opacity: 1; }
+.pulse-dot circle {
+    transform-origin: center;
+    animation: pulse 2s ease-out infinite;
+}
+.pulse-dot circle:nth-child(2) { animation-delay: 1s; }
+@keyframes pulse {
+    0%   { r: 6; opacity: 0.8; }
+    100% { r: 22; opacity: 0; }
+}
+
 .region-label {
-    font-size: 11px;
-    font-weight: 700;
+    font-family: 'Manrope', sans-serif;
+    font-size: 10.5px;
+    font-weight: 800;
     fill: #ffffff;
     text-anchor: middle;
     pointer-events: none;
     paint-order: stroke;
-    stroke: rgba(26, 77, 46, 0.85);
+    stroke: rgba(13, 43, 26, 0.9);
     stroke-width: 3px;
     stroke-linejoin: round;
     letter-spacing: 0.3px;
     user-select: none;
 }
-/* Для светлых регионов — тёмный текст */
 .region-label.on-light {
-    fill: #1a4d2e;
-    stroke: rgba(255, 255, 255, 0.9);
+    fill: #14401f;
+    stroke: rgba(255, 255, 255, 0.95);
 }
 
+/* Легенда */
 .legend {
     position: absolute;
-    top: 16px;
-    left: 16px;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 14px 18px;
-    border-radius: 10px;
+    top: 20px;
+    left: 20px;
+    background: var(--panel-bg-strong);
+    padding: 16px 20px;
+    border-radius: var(--radius-sm);
     box-shadow: var(--shadow);
     font-size: 13px;
     color: var(--text);
+    z-index: 5;
+    border: 1px solid rgba(45,122,79,0.15);
 }
-.legend h3 { font-size: 14px; margin-bottom: 10px; color: var(--green-dark); margin-top: 0; }
-.legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-.dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
-.dot.high   { background: #2d7a4f; }
-.dot.medium { background: #7bc47f; }
-.dot.low    { background: #c5e0c8; }
+.legend h3 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+    color: var(--green-700);
+    font-weight: 800;
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+.legend-item:last-child { margin-bottom: 0; }
+.dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.dot.high   { background: linear-gradient(135deg, #4caf50, #2d7a4f); }
+.dot.medium { background: linear-gradient(135deg, #a5d6a7, #7bc47f); }
+.dot.low    { background: linear-gradient(135deg, #e8f5e9, #c5e0c8); }
 
+/* Зум-контролы */
 .zoom-controls {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
+    bottom: 24px;
+    right: 24px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 10px;
-    padding: 6px;
+    gap: 8px;
+    background: var(--panel-bg-strong);
+    border-radius: 12px;
+    padding: 8px;
     box-shadow: var(--shadow);
+    z-index: 5;
+    border: 1px solid rgba(45,122,79,0.15);
 }
 .zoom-controls button {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border: none;
     background: transparent;
     font-size: 20px;
-    font-weight: 600;
-    color: var(--green-dark);
+    font-weight: 700;
+    color: var(--green-700);
     cursor: pointer;
-    border-radius: 6px;
-    transition: background 0.15s;
+    border-radius: 8px;
+    transition: var(--transition);
     font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.zoom-controls button:hover { background: #e0efe4; }
+.zoom-controls button:hover {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    transform: scale(1.05);
+}
+.zoom-controls button:active { transform: scale(0.95); }
 
-.info-panel {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    padding: 24px;
-    overflow-y: auto;
-    max-height: calc(100vh - 160px);
-    position: sticky;
-    top: 20px;
-    color: var(--text);
+/* Подсказка о свайпе (только на мобильных) */
+.map-hint {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--panel-bg-strong);
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-size: 12.5px;
+    color: var(--green-700);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+    display: none;
+    z-index: 5;
 }
+
+/* ============================================
+   ИНФО-ПАНЕЛЬ
+   ============================================ */
+.info-panel {
+    background: var(--panel-bg);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 26px;
+    overflow-y: auto;
+    max-height: calc(100vh - 140px);
+    position: sticky;
+    top: 100px;
+    color: var(--text);
+    border: 1px solid rgba(255,255,255,0.6);
+}
+
 #panelContent h2 {
-    color: var(--green-dark);
-    font-size: 20px;
-    margin-bottom: 14px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--gold);
-    margin-top: 0;
+    font-family: 'Unbounded', sans-serif;
+    color: var(--green-800);
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(90deg, var(--gold), transparent) 1;
+    letter-spacing: -0.3px;
+    line-height: 1.3;
 }
 #panelContent p {
     font-size: 14.5px;
-    line-height: 1.65;
-    color: #4a5550;
-    margin-bottom: 12px;
+    line-height: 1.7;
+    color: var(--text-soft);
+    margin-bottom: 14px;
 }
 #panelContent .hint {
-    margin-top: 20px;
-    padding: 12px;
-    background: #f0f7f2;
-    border-left: 3px solid var(--gold);
-    border-radius: 6px;
+    margin-top: 22px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #f0f7f2, #e6f2e9);
+    border-left: 4px solid var(--gold);
+    border-radius: 8px;
     font-size: 13px;
-    color: var(--green-mid);
+    color: var(--green-700);
+    font-weight: 500;
 }
+
+/* Строки-метрики */
 .stat-row {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
+    align-items: center;
+    padding: 12px 0;
     border-bottom: 1px solid #eef2ef;
     font-size: 14px;
+    gap: 10px;
 }
-.stat-row span:first-child { color: #6b7772; }
-.stat-row span:last-child  { font-weight: 600; color: var(--green-dark); }
+.stat-row:last-of-type { border-bottom: none; }
+.stat-row .label {
+    color: #6b7772;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+.stat-row .label .ico { font-size: 15px; }
+.stat-row .value {
+    font-weight: 700;
+    color: var(--green-800);
+    text-align: right;
+    white-space: nowrap;
+}
 
+/* Прогресс-бар потенциала */
+.potential-bar {
+    margin: 16px 0 20px;
+    padding: 14px 16px;
+    background: #f6faf7;
+    border-radius: 10px;
+    border: 1px solid #e3eee7;
+}
+.potential-bar .p-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--green-700);
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+.potential-bar .p-track {
+    height: 10px;
+    background: #e3eee7;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+.potential-bar .p-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(90deg, var(--green-500), var(--gold));
+    box-shadow: 0 0 10px rgba(139,195,74,0.4);
+}
+.potential-bar .p-fill.medium { background: linear-gradient(90deg, #a5d6a7, var(--green-500)); }
+.potential-bar .p-fill.low    { background: linear-gradient(90deg, #e8f5e9, #a5d6a7); }
+
+/* Карточки статистики */
+.stat-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+}
+.stat-card {
+    background: linear-gradient(135deg, #f6faf7, #eaf5ed);
+    border: 1px solid #d8e8de;
+    border-radius: 12px;
+    padding: 16px 14px;
+    text-align: center;
+    transition: var(--transition);
+    cursor: default;
+}
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(45,122,79,0.15);
+    border-color: var(--green-500);
+}
+.stat-card .ico {
+    font-size: 26px;
+    margin-bottom: 8px;
+    display: block;
+}
+.stat-card .num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--green-800);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.stat-card .lbl {
+    font-size: 11.5px;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+/* ============================================
+   ПЕРСОНАЖ НА КАРТЕ
+   ============================================ */
+.map-character {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    z-index: 6;
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+}
+.map-character.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.map-character img {
+    width: 100px;
+    height: 130px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.35));
+    animation: float 3s ease-in-out infinite;
+}
+.map-character .speech {
+    background: var(--panel-bg-strong);
+    border-radius: 14px 14px 14px 2px;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--green-800);
+    font-weight: 600;
+    box-shadow: var(--shadow);
+    margin-bottom: 40px;
+    max-width: 200px;
+    border: 1px solid rgba(45,122,79,0.2);
+    position: relative;
+}
+.map-character .speech::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 8px;
+    width: 0; height: 0;
+    border: 8px solid transparent;
+    border-top-color: var(--panel-bg-strong);
+    border-right: 0;
+    border-bottom: 0;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
 .footer {
     text-align: center;
-    padding: 16px;
-    font-size: 13px;
-    color: #e8f1ea;
-    background: rgba(26, 77, 46, 0.85);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 18px;
+    font-size: 12.5px;
+    color: #c8dccf;
+    background: rgba(13, 43, 26, 0.9);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(212, 165, 58, 0.2);
+    letter-spacing: 0.3px;
 }
 .footer p { margin: 0; }
 
 /* ============================================
+   TOAST-УВЕДОМЛЕНИЯ
+   ============================================ */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: linear-gradient(135deg, var(--green-700), var(--green-800));
+    color: #fff;
+    padding: 14px 26px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(212, 165, 58, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: calc(100vw - 40px);
+}
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ============================================
    АДАПТИВ
    ============================================ */
+@media (max-width: 1100px) {
+    .main { grid-template-columns: 1fr 340px; gap: 16px; padding: 16px; }
+    .info-panel { padding: 20px; }
+    .stat-cards { gap: 10px; }
+}
+
 @media (max-width: 900px) {
-    .main { grid-template-columns: 1fr; }
-    .info-panel { max-height: none; position: static; }
+    .main {
+        grid-template-columns: 1fr;
+        padding: 12px;
+        gap: 12px;
+    }
+    .info-panel {
+        max-height: none;
+        position: static;
+        padding: 20px;
+    }
+    .map-wrapper { min-height: 480px; }
+    .header { padding: 14px 20px; }
+    .logo h1 { font-size: 13px; }
+    .nav-btn { padding: 8px 14px; font-size: 13px; }
 }
+
 @media (max-width: 600px) {
-    #screen-main h1 { font-size: 30px; }
-    .subtitle { font-size: 16px; }
-    #screen-characters h2 { font-size: 24px; margin-bottom: 30px; }
-    .characters { gap: 40px; }
-    .char-img-wrap { width: 160px; height: 160px; }
-    .character p { font-size: 18px; }
+    .logo-badge { font-size: 11px; padding: 6px 16px; }
+    .subtitle { font-size: 15px; margin-bottom: 36px; }
+    .buttons { flex-direction: column; width: 100%; }
+    .btn { width: 100%; justify-content: center; }
+
+    #screen-characters h2 { font-size: 20px; margin-bottom: 36px; }
+    .characters { gap: 30px; }
+    .char-img-wrap { width: 160px; height: 220px; }
     .char-emoji { font-size: 90px; }
-    .logo h1 { font-size: 16px; }
+    .character p { font-size: 17px; margin-top: 16px; }
+
+    .contact-card { padding: 28px 24px; }
+    .contact-item { font-size: 15px; }
+
+    .map-wrapper { min-height: 380px; }
+    .legend { font-size: 11.5px; padding: 12px 14px; top: 12px; left: 12px; }
+    .zoom-controls { bottom: 14px; right: 14px; padding: 6px; }
+    .zoom-controls button { width: 38px; height: 38px; }
+    .map-hint { display: block; font-size: 11.5px; }
+
+    .stat-cards { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stat-card { padding: 12px 10px; }
+    .stat-card .ico { font-size: 22px; }
+    .stat-card .num { font-size: 16px; }
+
+    .map-character { bottom: 12px; left: 12px; }
+    .map-character img { width: 70px; height: 95px; }
+    .map-character .speech { font-size: 11.5px; padding: 8px 12px; max-width: 150px; margin-bottom: 28px; }
 }
+
+/* Красивый скроллбар панели */
+.info-panel::-webkit-scrollbar { width: 8px; }
+.info-panel::-webkit-scrollbar-track { background: transparent; }
+.info-panel::-webkit-scrollbar-thumb {
+    background: #c5d8cc;
+    border-radius: 4px;
+}
+.info-panel::-webkit-scrollbar-thumb:hover { background: var(--green-300); }
 </style>
 </head>
 <body>
 
 <!-- ФОН -->
 <div class="bg"></div>
-<div class="fireflies"></div>
+<div class="fireflies" id="fireflies"></div>
 
 <!-- ============================================
      ЭКРАН 1: ГЛАВНЫЙ
      ============================================ -->
 <div id="screen-main" class="screen active">
-    <h1>Хмель — зелёное золото России</h1>
-    <p class="subtitle">Интерактивная карта терруаров по возделыванию хмеля и производству сырья</p>
+    <div class="logo-badge">Интерактивная карта терруаров</div>
+    <h1>Хмель — зелёное<br>золото России</h1>
+    <p class="subtitle">
+        Исследуйте потенциал регионов по возделыванию хмеля
+        и производству сырья. Выбирайте персонажа и отправляйтесь
+        в путешествие по хмелеводческим терруарам страны.
+    </p>
     <div class="buttons">
-        <button class="btn btn-contacts" onclick="showScreen('contacts')">Контакты</button>
-        <button class="btn btn-more" onclick="showScreen('screen-characters')">Узнать больше</button>
+        <button class="btn btn-contacts" onclick="showScreen('contacts')">
+            <span>✉️</span> Контакты
+        </button>
+        <button class="btn btn-more" onclick="showScreen('screen-characters')">
+            <span>🌿</span> Узнать больше
+        </button>
     </div>
 </div>
 
@@ -514,7 +1010,8 @@ body {
     <h2>С кем хочешь отправиться в путешествие?</h2>
     <div class="characters">
 
-        <div class="character" onclick="chooseCharacter('boy')">
+        <div class="character" onclick="chooseCharacter('boy')" tabindex="0"
+             onkeydown="if(event.key==='Enter')chooseCharacter('boy')">
             <div class="char-img-wrap">
                 <img src="boy.png" alt="Мальчик"
                      onerror="this.parentElement.classList.add('no-image')">
@@ -523,7 +1020,8 @@ body {
             <p>Мальчик</p>
         </div>
 
-        <div class="character" onclick="chooseCharacter('girl')">
+        <div class="character" onclick="chooseCharacter('girl')" tabindex="0"
+             onkeydown="if(event.key==='Enter')chooseCharacter('girl')">
             <div class="char-img-wrap">
                 <img src="girl.png" alt="Девочка"
                      onerror="this.parentElement.classList.add('no-image')">
@@ -539,10 +1037,24 @@ body {
      ЭКРАН 3: КОНТАКТЫ
      ============================================ -->
 <div id="contacts" class="screen">
-    <h2>Контакты</h2>
-    <p>Email: example@mail.ru</p>
-    <p>Телефон: +7 (999) 123-45-67</p>
-    <button class="back-btn" onclick="showScreen('screen-main')">Назад</button>
+    <h2>Свяжитесь с нами</h2>
+    <div class="contact-card">
+        <div class="contact-item">
+            <span class="icon">✉️</span>
+            <a href="mailto:example@mail.ru">example@mail.ru</a>
+        </div>
+        <div class="contact-item">
+            <span class="icon">📞</span>
+            <a href="tel:+79991234567">+7 (999) 123-45-67</a>
+        </div>
+        <div class="contact-item">
+            <span class="icon">📍</span>
+            <span>Москва, Россия</span>
+        </div>
+    </div>
+    <button class="back-btn" onclick="showScreen('screen-main')">
+        <span>←</span> Назад
+    </button>
 </div>
 
 <!-- ============================================
@@ -556,29 +1068,52 @@ body {
             <h1>ХМЕЛЬ — ЗЕЛЁНОЕ ЗОЛОТО РОССИИ</h1>
         </div>
         <nav class="nav">
-            <button class="nav-btn active" data-view="map">Карта</button>
-            <button class="nav-btn" data-view="stats">Статистика</button>
-            <button class="nav-btn" data-view="about">О проекте</button>
-            <button class="nav-btn" data-view="exit">Выйти</button>
+            <button class="nav-btn active" data-view="map">🗺️ Карта</button>
+            <button class="nav-btn" data-view="stats">📊 Статистика</button>
+            <button class="nav-btn" data-view="about">ℹ️ О проекте</button>
+            <button class="nav-btn" data-view="exit">🚪 Выйти</button>
         </nav>
     </header>
 
     <main class="main">
         <section class="map-container">
             <div class="map-wrapper">
-                <svg id="russiaMap" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet"></svg>
+                <svg id="russiaMap" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <linearGradient id="gradHigh" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#4caf50"/>
+                            <stop offset="100%" stop-color="#2d7a4f"/>
+                        </linearGradient>
+                        <linearGradient id="gradMedium" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#a5d6a7"/>
+                            <stop offset="100%" stop-color="#7bc47f"/>
+                        </linearGradient>
+                        <linearGradient id="gradLow" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#e8f5e9"/>
+                            <stop offset="100%" stop-color="#c5e0c8"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
 
                 <div class="legend">
-                    <h3>Легенда</h3>
-                    <div class="legend-item"><span class="dot high"></span> Высокий потенциал</div>
-                    <div class="legend-item"><span class="dot medium"></span> Средний потенциал</div>
-                    <div class="legend-item"><span class="dot low"></span> Низкий потенциал</div>
+                    <h3>Потенциал</h3>
+                    <div class="legend-item"><span class="dot high"></span> Высокий</div>
+                    <div class="legend-item"><span class="dot medium"></span> Средний</div>
+                    <div class="legend-item"><span class="dot low"></span> Низкий</div>
                 </div>
 
                 <div class="zoom-controls">
-                    <button id="zoomIn">+</button>
-                    <button id="zoomOut">−</button>
-                    <button id="resetView">⟲</button>
+                    <button id="zoomIn" title="Приблизить">+</button>
+                    <button id="zoomOut" title="Отдалить">−</button>
+                    <button id="resetView" title="Сброс">⟲</button>
+                </div>
+
+                <div class="map-hint">👆 Свайп для перемещения · Щипок для зума</div>
+
+                <!-- Персонаж на карте -->
+                <div class="map-character" id="mapCharacter">
+                    <img id="characterImg" src="" alt="Персонаж">
+                    <div class="speech" id="characterSpeech">Привет! Выбери регион 👆</div>
                 </div>
             </div>
         </section>
@@ -588,32 +1123,92 @@ body {
                 <h2>Добро пожаловать</h2>
                 <p>Развитие международных связей, расширение сети дистрибуции и поиск новых рынков сбыта укрепят позиции России на международном рынке.</p>
                 <p>Внедрение строгого контроля качества на всех этапах — от производства до торговли — обеспечит высокий стандарт продукции ХПП.</p>
-                <p>Реализация этих планов невозможна без комплексного подхода, включающего разработку специализированных программ и использование экономических инструментов: налоговые льготы, субсидии и инвестиционные стимулы.</p>
                 <p class="hint">👆 Нажмите на регион на карте, чтобы увидеть детали</p>
             </div>
         </aside>
     </main>
 
     <footer class="footer">
-        <p>© 2025 Хмель — зелёное золото России. Интерактивная карта развития отрасли.</p>
+        <p>© 2025 Хмель — зелёное золото России · Интерактивная карта развития отрасли</p>
     </footer>
 </div>
 
+<!-- Тост -->
+<div class="toast" id="toast"></div>
+
 <script>
+/* ============================================
+   СВЕТЛЯЧКИ
+   ============================================ */
+function createFireflies() {
+    const container = document.getElementById('fireflies');
+    const count = window.innerWidth < 700 ? 12 : 22;
+    for (let i = 0; i < count; i++) {
+        const f = document.createElement('div');
+        f.className = 'firefly';
+        f.style.left = Math.random() * 100 + '%';
+        f.style.top  = Math.random() * 100 + '%';
+        f.style.animationDuration = (6 + Math.random() * 8) + 's, ' + (2 + Math.random() * 3) + 's';
+        f.style.animationDelay = '-' + (Math.random() * 10) + 's, -' + (Math.random() * 3) + 's';
+        f.style.opacity = 0.3 + Math.random() * 0.7;
+        container.appendChild(f);
+    }
+}
+createFireflies();
+
+/* ============================================
+   TOAST
+   ============================================ */
+let toastTimer;
+function showToast(text) {
+    const t = document.getElementById('toast');
+    t.textContent = text;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
 /* ============================================
    ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ
    ============================================ */
 function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (id === 'screen-map') initMap();
 }
 
+/* ============================================
+   ВЫБОР ПЕРСОНАЖА
+   ============================================ */
+let currentCharacter = null;
+
 function chooseCharacter(who) {
-    showScreen('screen-map');
-    console.log('Выбран персонаж:', who);
+    currentCharacter = who;
     localStorage.setItem('character', who);
+    showScreen('screen-map');
+    showToast(who === 'girl' ? '👧 Девочка отправляется в путь!' : '👦 Мальчик отправляется в путь!');
+
+    // Показать персонажа на карте
+    setTimeout(() => {
+        const wrap = document.getElementById('mapCharacter');
+        const img = document.getElementById('characterImg');
+        const speech = document.getElementById('characterSpeech');
+
+        const src = who === 'girl' ? 'girl.png' : 'boy.png';
+        img.src = src;
+        img.onerror = () => {
+            // Если картинки нет — оставляем эмодзи
+            img.style.display = 'none';
+            wrap.innerHTML = `
+                <div style="font-size:70px;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.4));animation:float 3s ease-in-out infinite;">
+                    ${who === 'girl' ? '👧' : '👦'}
+                </div>
+                <div class="speech" id="characterSpeech">Привет! Выбери регион 👆</div>
+            `;
+        };
+        wrap.classList.add('visible');
+    }, 400);
 }
 
 /* ============================================
@@ -622,147 +1217,94 @@ function chooseCharacter(who) {
 const regionsData = {
     "Республика Чувашия": {
         potential: "high", hops: "1 250 т/год", farms: 34,
-        area: "2 100 га", growth: "+18% за 3 года",
+        area: "2 100 га", growth: "+18%",
         description: "Ведущий регион-производитель хмеля в России. Исторически сложившиеся традиции хмелеводства, благоприятный климат и развитая инфраструктура переработки."
     },
     "Республика Марий Эл": {
         potential: "high", hops: "780 т/год", farms: 21,
-        area: "1 400 га", growth: "+12% за 3 года",
+        area: "1 400 га", growth: "+12%",
         description: "Второй по значимости регион хмелеводства. Активно развивается программа субсидирования и модернизации производства."
     },
     "Алтайский край": {
         potential: "medium", hops: "410 т/год", farms: 15,
-        area: "860 га", growth: "+9% за 3 года",
+        area: "860 га", growth: "+9%",
         description: "Перспективный регион с растущим потенциалом. Развивается экспортное направление в страны Азии."
     },
     "Краснодарский край": {
         potential: "medium", hops: "290 т/год", farms: 12,
-        area: "540 га", growth: "+7% за 3 года",
+        area: "540 га", growth: "+7%",
         description: "Южный регион с благоприятными условиями. Ориентирован на внутренний рынок пивоварения."
     },
     "Московская область": {
         potential: "low", hops: "95 т/год", farms: 6,
-        area: "180 га", growth: "+3% за 3 года",
+        area: "180 га", growth: "+3%",
         description: "Преимущественно переработка и логистика. Потенциал роста ограничен климатическими условиями."
     },
     "Ленинградская область": {
         potential: "low", hops: "60 т/год", farms: 4,
-        area: "120 га", growth: "+2% за 3 года",
+        area: "120 га", growth: "+2%",
         description: "Небольшой объём производства, ориентированный на крафтовое пивоварение региона."
     },
     "Республика Башкортостан": {
         potential: "medium", hops: "320 т/год", farms: 14,
-        area: "620 га", growth: "+8% за 3 года",
+        area: "620 га", growth: "+8%",
         description: "Развивающийся регион с программой поддержки фермерских хозяйств."
     },
     "Воронежская область": {
         potential: "low", hops: "75 т/год", farms: 5,
-        area: "140 га", growth: "+4% за 3 года",
+        area: "140 га", growth: "+4%",
         description: "Регион с умеренным потенциалом, ориентирован на местный рынок."
     },
     "Республика Татарстан": {
         potential: "medium", hops: "240 т/год", farms: 10,
-        area: "480 га", growth: "+6% за 3 года",
+        area: "480 га", growth: "+6%",
         description: "Активно внедряет инновационные технологии выращивания и переработки хмеля."
     },
     "Пермский край": {
         potential: "medium", hops: "280 т/год", farms: 11,
-        area: "500 га", growth: "+10% за 3 года",
+        area: "500 га", growth: "+10%",
         description: "Перспективный регион с растущей инвестиционной привлекательностью."
     }
 };
 
-/* ============================================
-   КООРДИНАТЫ РЕГИОНОВ
-   + short — короткое имя для подписи (в 2 строки через \n)
-   + labelX / labelY — сдвиг подписи от центра
-   ============================================ */
 const russiaRegions = [
-    {
-        name: "Московская область",
-        short: "Московская\nобласть",
-        points: "120,220 160,210 175,240 150,265 115,255",
-        labelX: 2, labelY: 0
-    },
-    {
-        name: "Ленинградская область",
-        short: "Ленинградская\nобласть",
-        points: "100,150 145,140 160,175 130,190 95,175",
-        labelX: 5, labelY: 2
-    },
-    {
-        name: "Краснодарский край",
-        short: "Краснодарский\nкрай",
-        points: "130,370 175,360 195,395 165,420 125,405",
-        labelX: 8, labelY: 0
-    },
-    {
-        name: "Воронежская область",
-        short: "Воронежская\nобласть",
-        points: "160,290 200,280 215,310 185,330 155,315",
-        labelX: 5, labelY: 0
-    },
-    {
-        name: "Республика Татарстан",
-        short: "Татарстан",
-        points: "250,265 295,255 310,290 280,310 245,295",
-        labelX: 0, labelY: 0
-    },
-    {
-        name: "Республика Башкортостан",
-        short: "Башкортостан",
-        points: "310,265 360,255 375,300 340,320 305,300",
-        labelX: 2, labelY: 0
-    },
-    {
-        name: "Пермский край",
-        short: "Пермский\nкрай",
-        points: "300,200 355,190 375,235 340,255 300,235",
-        labelX: 0, labelY: 0
-    },
-    {
-        name: "Республика Марий Эл",
-        short: "Марий Эл",
-        points: "235,225 275,215 290,250 260,270 230,250",
-        labelX: 5, labelY: 0
-    },
-    {
-        name: "Республика Чувашия",
-        short: "Чувашия",
-        points: "235,270 275,260 285,295 255,310 230,290",
-        labelX: 5, labelY: 0
-    },
-    {
-        name: "Алтайский край",
-        short: "Алтайский\nкрай",
-        points: "450,290 520,280 545,330 500,355 445,330",
-        labelX: 0, labelY: 0
-    }
+    { name: "Московская область",    short: "Московская\nобласть",    points: "120,220 160,210 175,240 150,265 115,255", labelX: 2, labelY: 0 },
+    { name: "Ленинградская область", short: "Ленинградская\nобласть", points: "100,150 145,140 160,175 130,190 95,175",   labelX: 5, labelY: 2 },
+    { name: "Краснодарский край",    short: "Краснодарский\nкрай",    points: "130,370 175,360 195,395 165,420 125,405", labelX: 8, labelY: 0 },
+    { name: "Воронежская область",   short: "Воронежская\nобласть",   points: "160,290 200,280 215,310 185,330 155,315", labelX: 5, labelY: 0 },
+    { name: "Республика Татарстан",  short: "Татарстан",              points: "250,265 295,255 310,290 280,310 245,295", labelX: 0, labelY: 0 },
+    { name: "Республика Башкортостан", short: "Башкортостан",         points: "310,265 360,255 375,300 340,320 305,300", labelX: 2, labelY: 0 },
+    { name: "Пермский край",         short: "Пермский\nкрай",         points: "300,200 355,190 375,235 340,255 300,235", labelX: 0, labelY: 0 },
+    { name: "Республика Марий Эл",   short: "Марий Эл",               points: "235,225 275,215 290,250 260,270 230,250", labelX: 5, labelY: 0 },
+    { name: "Республика Чувашия",    short: "Чувашия",                points: "235,270 275,260 285,295 255,310 230,290", labelX: 5, labelY: 0 },
+    { name: "Алтайский край",        short: "Алтайский\nкрай",        points: "450,290 520,280 545,330 500,355 445,330", labelX: 0, labelY: 0 }
 ];
 
 /* ============================================
    ИНИЦИАЛИЗАЦИЯ КАРТЫ
    ============================================ */
 let mapInitialized = false;
+let svgEl, gEl, pulseGroup;
 
 function initMap() {
     if (mapInitialized) return;
     mapInitialized = true;
 
-    const svg = document.getElementById("russiaMap");
+    svgEl = document.getElementById("russiaMap");
     const SVG_NS = "http://www.w3.org/2000/svg";
-    const g = document.createElementNS(SVG_NS, "g");
-    g.setAttribute("id", "mapGroup");
-    svg.appendChild(g);
+    gEl = document.createElementNS(SVG_NS, "g");
+    gEl.setAttribute("id", "mapGroup");
+    svgEl.appendChild(gEl);
 
-    // Фон-контур России
+    // Фон-контур
     const bgPath = document.createElementNS(SVG_NS, "path");
     bgPath.setAttribute("d", "M60,140 Q120,90 220,120 L280,180 L320,170 L380,200 L450,190 L520,240 L560,300 L530,360 L460,380 L390,360 L320,340 L250,360 L180,400 L120,370 L80,300 Z");
-    bgPath.setAttribute("fill", "#eaf2ec");
+    bgPath.setAttribute("fill", "#ffffff");
+    bgPath.setAttribute("opacity", "0.5");
     bgPath.setAttribute("stroke", "#c5d8cc");
     bgPath.setAttribute("stroke-width", "1.5");
-    bgPath.setAttribute("stroke-dasharray", "4,4");
-    g.appendChild(bgPath);
+    bgPath.setAttribute("stroke-dasharray", "6,6");
+    gEl.appendChild(bgPath);
 
     // Регионы
     russiaRegions.forEach(region => {
@@ -771,20 +1313,17 @@ function initMap() {
         poly.setAttribute("points", region.points);
         poly.setAttribute("class", `region ${data.potential}`);
         poly.dataset.name = region.name;
+        poly.setAttribute("tabindex", "0");
 
-        // Центр региона
         const coords = region.points.split(" ").map(p => p.split(",").map(Number));
         const cx = coords.reduce((s, p) => s + p[0], 0) / coords.length;
         const cy = coords.reduce((s, p) => s + p[1], 0) / coords.length;
 
-        // Подпись региона (может быть в 2 строки через \n)
         const lines = region.short.split("\n");
         const label = document.createElementNS(SVG_NS, "text");
         label.setAttribute("x", cx + (region.labelX || 0));
         label.setAttribute("y", cy + (region.labelY || 0) - (lines.length - 1) * 6);
-        label.setAttribute("class",
-            "region-label" + (data.potential === "low" ? " on-light" : "")
-        );
+        label.setAttribute("class", "region-label" + (data.potential === "low" ? " on-light" : ""));
 
         lines.forEach((line, i) => {
             const tspan = document.createElementNS(SVG_NS, "tspan");
@@ -795,48 +1334,99 @@ function initMap() {
         });
 
         poly.addEventListener("click", () => selectRegion(region.name));
-        g.appendChild(poly);
-        g.appendChild(label);
+        poly.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                selectRegion(region.name);
+            }
+        });
+
+        gEl.appendChild(poly);
+        gEl.appendChild(label);
     });
+
+    // Группа для пульса
+    pulseGroup = document.createElementNS(SVG_NS, "g");
+    pulseGroup.setAttribute("class", "pulse-dot");
+    pulseGroup.innerHTML = `
+        <circle r="6" fill="#d4a53a" opacity="0.9"/>
+        <circle r="6" fill="none" stroke="#d4a53a" stroke-width="2"/>
+        <circle r="6" fill="none" stroke="#d4a53a" stroke-width="2"/>
+    `;
+    gEl.appendChild(pulseGroup);
 
     /* ===== Зум / пан ===== */
     let scale = 1, translateX = 0, translateY = 0;
     let isPanning = false, startX, startY;
 
     function updateTransform() {
-        g.setAttribute("transform", `translate(${translateX}, ${translateY}) scale(${scale})`);
+        gEl.setAttribute("transform", `translate(${translateX}, ${translateY}) scale(${scale})`);
     }
 
     document.getElementById("zoomIn").onclick = () => {
-        scale = Math.min(scale * 1.2, 4); updateTransform();
+        scale = Math.min(scale * 1.25, 4); updateTransform();
     };
     document.getElementById("zoomOut").onclick = () => {
-        scale = Math.max(scale / 1.2, 0.5); updateTransform();
+        scale = Math.max(scale / 1.25, 0.6); updateTransform();
     };
     document.getElementById("resetView").onclick = () => {
         scale = 1; translateX = 0; translateY = 0; updateTransform();
+        showToast('🔄 Вид сброшен');
     };
 
-    svg.addEventListener("mousedown", (e) => {
+    svgEl.addEventListener("mousedown", (e) => {
         isPanning = true;
         startX = e.clientX - translateX;
         startY = e.clientY - translateY;
+        svgEl.style.cursor = 'grabbing';
     });
-    svg.addEventListener("mousemove", (e) => {
+    svgEl.addEventListener("mousemove", (e) => {
         if (!isPanning) return;
         translateX = e.clientX - startX;
         translateY = e.clientY - startY;
         updateTransform();
     });
-    svg.addEventListener("mouseup", () => isPanning = false);
-    svg.addEventListener("mouseleave", () => isPanning = false);
+    svgEl.addEventListener("mouseup", () => { isPanning = false; svgEl.style.cursor = 'grab'; });
+    svgEl.addEventListener("mouseleave", () => { isPanning = false; svgEl.style.cursor = 'grab'; });
 
-    svg.addEventListener("wheel", (e) => {
+    svgEl.addEventListener("wheel", (e) => {
         e.preventDefault();
-        const delta = e.deltaY < 0 ? 1.1 : 0.9;
-        scale = Math.min(Math.max(scale * delta, 0.5), 4);
+        const delta = e.deltaY < 0 ? 1.12 : 0.89;
+        scale = Math.min(Math.max(scale * delta, 0.6), 4);
         updateTransform();
     }, { passive: false });
+
+    // Touch
+    let lastDist = 0;
+    svgEl.addEventListener("touchstart", (e) => {
+        if (e.touches.length === 1) {
+            isPanning = true;
+            startX = e.touches[0].clientX - translateX;
+            startY = e.touches[0].clientY - translateY;
+        } else if (e.touches.length === 2) {
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            lastDist = Math.hypot(dx, dy);
+        }
+    }, { passive: true });
+    svgEl.addEventListener("touchmove", (e) => {
+        if (e.touches.length === 1 && isPanning) {
+            translateX = e.touches[0].clientX - startX;
+            translateY = e.touches[0].clientY - startY;
+            updateTransform();
+        } else if (e.touches.length === 2) {
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            const dist = Math.hypot(dx, dy);
+            if (lastDist) {
+                const delta = dist / lastDist;
+                scale = Math.min(Math.max(scale * delta, 0.6), 4);
+                updateTransform();
+            }
+            lastDist = dist;
+        }
+    }, { passive: true });
+    svgEl.addEventListener("touchend", () => { isPanning = false; lastDist = 0; }, { passive: true });
 
     /* ===== Навигация ===== */
     document.querySelectorAll(".nav-btn").forEach(btn => {
@@ -851,29 +1441,41 @@ function initMap() {
 
             if (view === "map") {
                 document.getElementById("panelContent").innerHTML = `
-                    <h2>Интерактивная карта</h2>
+                    <h2>🗺️ Интерактивная карта</h2>
                     <p>Выберите регион на карте, чтобы увидеть данные о потенциале и развитии хмелеводства.</p>
-                    <p class="hint">💡 Используйте кнопки <b>+</b> / <b>−</b> или колесо мыши для масштабирования.</p>
+                    <p class="hint">💡 Используйте кнопки <b>+</b> / <b>−</b>, колесо мыши или щипок для масштабирования.</p>
                 `;
             } else if (view === "stats") {
                 document.getElementById("panelContent").innerHTML = `
-                    <h2>Статистика отрасли</h2>
-                    <div class="stat-row"><span>Общее производство</span><span>3 800 т/год</span></div>
-                    <div class="stat-row"><span>Всего хозяйств</span><span>132</span></div>
-                    <div class="stat-row"><span>Общая площадь</span><span>6 940 га</span></div>
-                    <div class="stat-row"><span>Средний рост</span><span>+9% в год</span></div>
-                    <div class="stat-row"><span>Экспортных направлений</span><span>14</span></div>
+                    <h2>📊 Статистика отрасли</h2>
+                    <div class="stat-cards">
+                        <div class="stat-card"><span class="ico">🌾</span><div class="num">3 800</div><div class="lbl">т/год всего</div></div>
+                        <div class="stat-card"><span class="ico">🏡</span><div class="num">132</div><div class="lbl">хозяйств</div></div>
+                        <div class="stat-card"><span class="ico">📐</span><div class="num">6 940</div><div class="lbl">га площадь</div></div>
+                        <div class="stat-card"><span class="ico">📈</span><div class="num">+9%</div><div class="lbl">рост/год</div></div>
+                    </div>
+                    <div class="stat-row"><span class="label">🌍 Экспортных направлений</span><span class="value">14</span></div>
+                    <div class="stat-row"><span class="label">🏆 Регионов-лидеров</span><span class="value">2</span></div>
+                    <div class="stat-row"><span class="label">🌱 Средний возраст плантаций</span><span class="value">7 лет</span></div>
                     <p class="hint">📊 Данные приведены на основе стратегии развития хмелеводства РФ.</p>
                 `;
             } else if (view === "about") {
                 document.getElementById("panelContent").innerHTML = `
-                    <h2>О проекте</h2>
+                    <h2>ℹ️ О проекте</h2>
                     <p>Развитие международных связей, расширение сети дистрибуции и поиск новых рынков сбыта укрепят позиции России на международном рынке.</p>
                     <p>Внедрение строгого контроля качества на всех этапах — от производства до торговли — обеспечит высокий стандарт продукции ХПП.</p>
                     <p>Реализация этих планов невозможна без комплексного подхода, включающего разработку специализированных программ и использование экономических инструментов: налоговые льготы, субсидии и инвестиционные стимулы.</p>
+                    <p class="hint">🌿 Проект создан для визуализации потенциала российского хмелеводства.</p>
                 `;
             }
         });
+    });
+
+    // Esc — вернуться на главную
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.getElementById('screen-map').classList.contains('active')) {
+            showScreen('screen-main');
+        }
     });
 }
 
@@ -885,18 +1487,59 @@ function selectRegion(name) {
     const el = document.querySelector(`.region[data-name="${name}"]`);
     if (el) el.classList.add("selected");
 
+    // Пульс-точка на центре
+    const coords = russiaRegions.find(r => r.name === name).points.split(" ").map(p => p.split(",").map(Number));
+    const cx = coords.reduce((s, p) => s + p[0], 0) / coords.length;
+    const cy = coords.reduce((s, p) => s + p[1], 0) / coords.length;
+    pulseGroup.setAttribute("transform", `translate(${cx}, ${cy})`);
+    pulseGroup.classList.add("visible");
+
+    // Обновляем "речь" персонажа
+    const speech = document.getElementById('characterSpeech');
+    if (speech) {
+        const data = regionsData[name];
+        const labels = { high: "высокий потенциал", medium: "средний потенциал", low: "низкий потенциал" };
+        speech.textContent = `${name}: ${labels[data.potential]} 🌿`;
+    }
+
     const data = regionsData[name];
     const potentialLabels = { high: "Высокий", medium: "Средний", low: "Низкий" };
+    const fillPercent = { high: 100, medium: 60, low: 30 };
 
     document.getElementById("panelContent").innerHTML = `
         <h2>${name}</h2>
         <p>${data.description}</p>
-        <div class="stat-row"><span>Потенциал</span><span>${potentialLabels[data.potential]}</span></div>
-        <div class="stat-row"><span>Объём производства</span><span>${data.hops}</span></div>
-        <div class="stat-row"><span>Хозяйств</span><span>${data.farms}</span></div>
-        <div class="stat-row"><span>Площадь</span><span>${data.area}</span></div>
-        <div class="stat-row"><span>Динамика</span><span>${data.growth}</span></div>
+
+        <div class="potential-bar">
+            <div class="p-title">Уровень потенциала</div>
+            <div class="p-track">
+                <div class="p-fill ${data.potential}" style="width: ${fillPercent[data.potential]}%"></div>
+            </div>
+        </div>
+
+        <div class="stat-row">
+            <span class="label"><span class="ico">⭐</span> Потенциал</span>
+            <span class="value">${potentialLabels[data.potential]}</span>
+        </div>
+        <div class="stat-row">
+            <span class="label"><span class="ico">🌾</span> Производство</span>
+            <span class="value">${data.hops}</span>
+        </div>
+        <div class="stat-row">
+            <span class="label"><span class="ico">🏡</span> Хозяйств</span>
+            <span class="value">${data.farms}</span>
+        </div>
+        <div class="stat-row">
+            <span class="label"><span class="ico">📐</span> Площадь</span>
+            <span class="value">${data.area}</span>
+        </div>
+        <div class="stat-row">
+            <span class="label"><span class="ico">📈</span> Динамика</span>
+            <span class="value">${data.growth} за 3 года</span>
+        </div>
     `;
+
+    showToast(`📍 ${name}`);
 }
 </script>
 
