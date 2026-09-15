@@ -1,224 +1,593 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Хмель — зелёное золото России</title>
-  <style>
-    * { box-sizing: border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ХМЕЛЬ — ЗЕЛЁНОЕ ЗОЛОТО РОССИИ</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      overflow-x: hidden;
-      color: #fff;
-    }
+:root {
+    --green-dark: #1a4d2e;
+    --green-mid: #2d7a4f;
+    --green-light: #4caf50;
+    --gold: #d4a53a;
+    --panel-bg: #ffffff;
+    --text: #1e2a23;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
 
-    .bg {
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      background: url('bg.jpg') center/cover no-repeat fixed;
-    }
-    .bg::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(rgba(15, 42, 15, 0.65), rgba(26, 60, 26, 0.8));
-    }
-    .fireflies {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      background-image:
-        radial-gradient(2px 2px at 20% 30%, rgba(255,255,200,0.6), transparent),
-        radial-gradient(2px 2px at 70% 60%, rgba(255,255,200,0.5), transparent),
-        radial-gradient(2px 2px at 40% 80%, rgba(255,255,200,0.4), transparent),
-        radial-gradient(2px 2px at 85% 20%, rgba(255,255,200,0.5), transparent),
-        radial-gradient(2px 2px at 10% 70%, rgba(255,255,200,0.4), transparent);
-      animation: flicker 4s ease-in-out infinite alternate;
-    }
-    @keyframes flicker {
-      from { opacity: 0.4; }
-      to   { opacity: 1; }
-    }
+body {
+    font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+    /* === ФОН С ФОТО ХМЕЛЯ === */
+    background:
+        linear-gradient(rgba(10, 30, 18, 0.45), rgba(10, 30, 18, 0.45)),
+        url('background.jpg') center center / cover no-repeat fixed;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
 
-    .screen {
-      min-height: 100vh;
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 40px 20px;
-      animation: fadeIn 0.8s ease;
-    }
-    .screen.active { display: flex; }
+/* ===== HEADER ===== */
+.header {
+    background: linear-gradient(135deg,
+                rgba(26, 77, 46, 0.92),
+                rgba(45, 122, 79, 0.92));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fff;
+    padding: 18px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    flex-wrap: wrap;
+    gap: 16px;
+}
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
-    #screen-main h1 {
-      font-size: 52px;
-      margin: 0 0 20px;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.7);
-      letter-spacing: 1px;
-    }
-    .subtitle {
-      font-size: 20px;
-      opacity: 0.95;
-      max-width: 700px;
-      margin-bottom: 50px;
-      line-height: 1.5;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.6);
-    }
-    .buttons {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .btn {
-      padding: 16px 42px;
-      font-size: 18px;
-      border-radius: 50px;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.3s;
-      font-family: inherit;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-    .btn-contacts {
-      background: rgba(0,0,0,0.35);
-      color: #fff;
-      border: 2px solid rgba(255,255,255,0.8);
-      backdrop-filter: blur(6px);
-    }
-    .btn-contacts:hover {
-      background: #fff;
-      color: #1a3c1a;
-      transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-    }
-    .btn-history {
-      background: linear-gradient(135deg, #8bc34a, #558b2f);
-      color: #fff;
-      box-shadow: 0 6px 20px rgba(124,179,66,0.5);
-    }
-    .btn-history:hover {
-      transform: translateY(-3px) scale(1.03);
-      box-shadow: 0 12px 30px rgba(124,179,66,0.7);
-    }
+.logo-icon {
+    font-size: 32px;
+}
 
-    /* Экран истории */
-    #history h2 {
-      font-size: 42px;
-      margin-bottom: 30px;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.8);
-    }
-    .history-text {
-      max-width: 820px;
-      font-size: 19px;
-      line-height: 1.7;
-      text-align: left;
-      background: rgba(0, 0, 0, 0.45);
-      padding: 34px 40px;
-      border-radius: 18px;
-      backdrop-filter: blur(6px);
-      border: 1px solid rgba(255,255,255,0.15);
-      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-    }
-    .history-text p {
-      margin: 0 0 18px;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.6);
-    }
-    .history-text p:last-child { margin-bottom: 0; }
+.logo h1 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
 
-    /* Контакты */
-    #contacts h2 {
-      font-size: 40px;
-      margin-bottom: 30px;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.7);
-    }
-    #contacts p {
-      font-size: 20px;
-      margin: 10px 0;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
-    }
-    .back-btn {
-      margin-top: 40px;
-      padding: 14px 36px;
-      font-size: 16px;
-      border-radius: 50px;
-      border: 2px solid #fff;
-      background: rgba(0,0,0,0.35);
-      color: #fff;
-      cursor: pointer;
-      transition: 0.3s;
-      font-family: inherit;
-      font-weight: 600;
-      backdrop-filter: blur(6px);
-    }
-    .back-btn:hover {
-      background: #fff;
-      color: #1a3c1a;
-    }
+.nav {
+    display: flex;
+    gap: 8px;
+}
 
-    @media (max-width: 600px) {
-      #screen-main h1 { font-size: 30px; }
-      .subtitle { font-size: 16px; }
-      #history h2 { font-size: 28px; }
-      .history-text { font-size: 16px; padding: 22px 20px; }
-      #contacts h2 { font-size: 28px; }
+.nav-btn {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.nav-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--green-dark);
+    font-weight: 600;
+}
+
+/* ===== MAIN LAYOUT ===== */
+.main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1600px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* ===== MAP ===== */
+.map-container {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    position: relative;
+}
+
+.map-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 600px;
+    background: radial-gradient(circle at 50% 50%,
+                rgba(232, 241, 234, 0.9),
+                rgba(213, 230, 217, 0.95));
+}
+
+#russiaMap {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+}
+
+#russiaMap:active {
+    cursor: grabbing;
+}
+
+.region {
+    stroke: #ffffff;
+    stroke-width: 0.8;
+    cursor: pointer;
+    transition: opacity 0.2s, filter 0.2s;
+}
+
+.region:hover {
+    filter: brightness(1.15);
+    stroke-width: 1.5;
+}
+
+.region.high { fill: #2d7a4f; }
+.region.medium { fill: #7bc47f; }
+.region.low { fill: #c5e0c8; }
+
+.region.selected {
+    stroke: var(--gold);
+    stroke-width: 2.5;
+    filter: brightness(1.2);
+}
+
+/* ===== LEGEND ===== */
+.legend {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 14px 18px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    font-size: 13px;
+}
+
+.legend h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: var(--green-dark);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot.high { background: #2d7a4f; }
+.dot.medium { background: #7bc47f; }
+.dot.low { background: #c5e0c8; }
+
+/* ===== ZOOM CONTROLS ===== */
+.zoom-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: var(--shadow);
+}
+
+.zoom-controls button {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--green-dark);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.15s;
+}
+
+.zoom-controls button:hover {
+    background: #e0efe4;
+}
+
+/* ===== INFO PANEL ===== */
+.info-panel {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 24px;
+    overflow-y: auto;
+    max-height: calc(100vh - 160px);
+    position: sticky;
+    top: 20px;
+}
+
+#panelContent h2 {
+    color: var(--green-dark);
+    font-size: 20px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--gold);
+}
+
+#panelContent p {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: #4a5550;
+    margin-bottom: 12px;
+}
+
+#panelContent .hint {
+    margin-top: 20px;
+    padding: 12px;
+    background: #f0f7f2;
+    border-left: 3px solid var(--gold);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--green-mid);
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eef2ef;
+    font-size: 14px;
+}
+
+.stat-row span:first-child {
+    color: #6b7772;
+}
+
+.stat-row span:last-child {
+    font-weight: 600;
+    color: var(--green-dark);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    text-align: center;
+    padding: 16px;
+    font-size: 13px;
+    color: #e8f1ea;
+    background: rgba(26, 77, 46, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+    .main {
+        grid-template-columns: 1fr;
     }
-  </style>
+    .info-panel {
+        max-height: none;
+        position: static;
+    }
+    .logo h1 {
+        font-size: 16px;
+    }
+}
+</style>
 </head>
 <body>
 
-  <div class="bg"></div>
-  <div class="fireflies"></div>
-
-  <!-- ЭКРАН 1: Главный -->
-  <div id="screen-main" class="screen active">
-    <h1>Хмель — зелёное золото России</h1>
-    <p class="subtitle">Интерактивная карта терруаров по возделыванию хмеля и производству сырья</p>
-    <div class="buttons">
-      <button class="btn btn-contacts" onclick="showScreen('contacts')">Контакты</button>
-      <button class="btn btn-history" onclick="showScreen('history')">История хмеля</button>
+<header class="header">
+    <div class="logo">
+        <span class="logo-icon">🌿</span>
+        <h1>ХМЕЛЬ — ЗЕЛЁНОЕ ЗОЛОТО РОССИИ</h1>
     </div>
-  </div>
+    <nav class="nav">
+        <button class="nav-btn active" data-view="map">Карта</button>
+        <button class="nav-btn" data-view="stats">Статистика</button>
+        <button class="nav-btn" data-view="about">О проекте</button>
+    </nav>
+</header>
 
-  <!-- ЭКРАН 2: История хмеля -->
-  <div id="history" class="screen">
-    <h2>История хмеля</h2>
-    <div class="history-text">
-      <p>Дикий хмель рос в Евразии ещё в бронзовом веке. О растении знали и в античности: римские и арабские врачи описывали его как пищевое и лекарственное.</p>
-      <p>В разных культурах хмель наделяли особым смыслом. Например, в славянской традиции его считали символом плодородия и крепкого союза: молодых супругов осыпали шишками хмеля, желая им счастья.</p>
-      <p>В скандинавском эпосе хмель видели как дар Одина, помогающий героям и знахарям. В восточных странах его тоже ценили — в традиционной китайской медицине хмель включали в рецепты успокаивающих средств.</p>
-    </div>
-    <button class="back-btn" onclick="showScreen('screen-main')">Назад</button>
-  </div>
+<main class="main">
+    <section class="map-container">
+        <div class="map-wrapper">
+            <svg id="russiaMap" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet"></svg>
 
-  <!-- ЭКРАН 3: Контакты -->
-  <div id="contacts" class="screen">
-    <h2>Контакты</h2>
-    <p>Email: example@mail.ru</p>
-    <p>Телефон: +7 (999) 123-45-67</p>
-    <button class="back-btn" onclick="showScreen('screen-main')">Назад</button>
-  </div>
+            <div class="legend">
+                <h3>Легенда</h3>
+                <div class="legend-item"><span class="dot high"></span> Высокий потенциал</div>
+                <div class="legend-item"><span class="dot medium"></span> Средний потенциал</div>
+                <div class="legend-item"><span class="dot low"></span> Низкий потенциал</div>
+            </div>
 
-  <script>
-    function showScreen(id) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      window.scrollTo(0, 0);
+            <div class="zoom-controls">
+                <button id="zoomIn">+</button>
+                <button id="zoomOut">−</button>
+                <button id="resetView">⟲</button>
+            </div>
+        </div>
+    </section>
+
+    <aside class="info-panel">
+        <div id="panelContent">
+            <h2>Добро пожаловать</h2>
+            <p>
+                Развитие международных связей, расширение сети дистрибуции
+                и поиск новых рынков сбыта укрепят позиции России на
+                международном рынке.
+            </p>
+            <p>
+                Внедрение строгого контроля качества на всех этапах —
+                от производства до торговли — обеспечит высокий стандарт
+                продукции ХПП.
+            </p>
+            <p>
+                Реализация этих планов невозможна без комплексного подхода,
+                включающего разработку специализированных программ и
+                использование экономических инструментов: налоговые льготы,
+                субсидии и инвестиционные стимулы.
+            </p>
+            <p class="hint">👆 Нажмите на регион на карте, чтобы увидеть детали</p>
+        </div>
+    </aside>
+</main>
+
+<footer class="footer">
+    <p>© 2025 Хмель — зелёное золото России. Интерактивная карта развития отрасли.</p>
+</footer>
+
+<script>
+// ============================================
+// ДАННЫЕ РЕГИОНОВ
+// ============================================
+const regionsData = {
+    "Республика Чувашия": {
+        potential: "high", hops: "1 250 т/год", farms: 34,
+        area: "2 100 га", growth: "+18% за 3 года",
+        description: "Ведущий регион-производитель хмеля в России. Исторически сложившиеся традиции хмелеводства, благоприятный климат и развитая инфраструктура переработки."
+    },
+    "Республика Марий Эл": {
+        potential: "high", hops: "780 т/год", farms: 21,
+        area: "1 400 га", growth: "+12% за 3 года",
+        description: "Второй по значимости регион хмелеводства. Активно развивается программа субсидирования и модернизации производства."
+    },
+    "Алтайский край": {
+        potential: "medium", hops: "410 т/год", farms: 15,
+        area: "860 га", growth: "+9% за 3 года",
+        description: "Перспективный регион с растущим потенциалом. Развивается экспортное направление в страны Азии."
+    },
+    "Краснодарский край": {
+        potential: "medium", hops: "290 т/год", farms: 12,
+        area: "540 га", growth: "+7% за 3 года",
+        description: "Южный регион с благоприятными условиями. Ориентирован на внутренний рынок пивоварения."
+    },
+    "Московская область": {
+        potential: "low", hops: "95 т/год", farms: 6,
+        area: "180 га", growth: "+3% за 3 года",
+        description: "Преимущественно переработка и логистика. Потенциал роста ограничен климатическими условиями."
+    },
+    "Ленинградская область": {
+        potential: "low", hops: "60 т/год", farms: 4,
+        area: "120 га", growth: "+2% за 3 года",
+        description: "Небольшой объём производства, ориентированный на крафтовое пивоварение региона."
+    },
+    "Республика Башкортостан": {
+        potential: "medium", hops: "320 т/год", farms: 14,
+        area: "620 га", growth: "+8% за 3 года",
+        description: "Развивающийся регион с программой поддержки фермерских хозяйств."
+    },
+    "Воронежская область": {
+        potential: "low", hops: "75 т/год", farms: 5,
+        area: "140 га", growth: "+4% за 3 года",
+        description: "Регион с умеренным потенциалом, ориентирован на местный рынок."
+    },
+    "Республика Татарстан": {
+        potential: "medium", hops: "240 т/год", farms: 10,
+        area: "480 га", growth: "+6% за 3 года",
+        description: "Активно внедряет инновационные технологии выращивания и переработки хмеля."
+    },
+    "Пермский край": {
+        potential: "medium", hops: "280 т/год", farms: 11,
+        area: "500 га", growth: "+10% за 3 года",
+        description: "Перспективный регион с растущей инвестиционной привлекательностью."
     }
-  </script>
+};
 
+// ============================================
+// КАРТА РОССИИ
+// ============================================
+const russiaRegions = [
+    { name: "Московская область",    points: "120,220 160,210 175,240 150,265 115,255" },
+    { name: "Ленинградская область", points: "100,150 145,140 160,175 130,190 95,175" },
+    { name: "Краснодарский край",    points: "130,370 175,360 195,395 165,420 125,405" },
+    { name: "Воронежская область",   points: "160,290 200,280 215,310 185,330 155,315" },
+    { name: "Республика Татарстан",  points: "250,265 295,255 310,290 280,310 245,295" },
+    { name: "Республика Башкортостан", points: "310,265 360,255 375,300 340,320 305,300" },
+    { name: "Пермский край",         points: "300,200 355,190 375,235 340,255 300,235" },
+    { name: "Республика Марий Эл",   points: "235,225 275,215 290,250 260,270 230,250" },
+    { name: "Республика Чувашия",    points: "235,270 275,260 285,295 255,310 230,290" },
+    { name: "Алтайский край",        points: "450,290 520,280 545,330 500,355 445,330" }
+];
+
+const svg = document.getElementById("russiaMap");
+const SVG_NS = "http://www.w3.org/2000/svg";
+const g = document.createElementNS(SVG_NS, "g");
+g.setAttribute("id", "mapGroup");
+svg.appendChild(g);
+
+// Фон-контур
+const bgPath = document.createElementNS(SVG_NS, "path");
+bgPath.setAttribute("d", "M60,140 Q120,90 220,120 L280,180 L320,170 L380,200 L450,190 L520,240 L560,300 L530,360 L460,380 L390,360 L320,340 L250,360 L180,400 L120,370 L80,300 Z");
+bgPath.setAttribute("fill", "#eaf2ec");
+bgPath.setAttribute("stroke", "#c5d8cc");
+bgPath.setAttribute("stroke-width", "1.5");
+bgPath.setAttribute("stroke-dasharray", "4,4");
+g.appendChild(bgPath);
+
+// Рисуем регионы
+russiaRegions.forEach(region => {
+    const data = regionsData[region.name];
+    const poly = document.createElementNS(SVG_NS, "polygon");
+    poly.setAttribute("points", region.points);
+    poly.setAttribute("class", `region ${data.potential}`);
+    poly.dataset.name = region.name;
+
+    const coords = region.points.split(" ").map(p => p.split(",").map(Number));
+    const cx = coords.reduce((s, p) => s + p[0], 0) / coords.length;
+    const cy = coords.reduce((s, p) => s + p[1], 0) / coords.length;
+
+    const label = document.createElementNS(SVG_NS, "text");
+    label.setAttribute("x", cx);
+    label.setAttribute("y", cy);
+    label.setAttribute("text-anchor", "middle");
+    label.setAttribute("font-size", "10");
+    label.setAttribute("fill", "#1a4d2e");
+    label.setAttribute("pointer-events", "none");
+    label.setAttribute("font-weight", "600");
+    label.textContent = region.name.split(" ").slice(-1)[0];
+
+    poly.addEventListener("click", () => selectRegion(region.name));
+    g.appendChild(poly);
+    g.appendChild(label);
+});
+
+// ============================================
+// ВЫБОР РЕГИОНА
+// ============================================
+function selectRegion(name) {
+    document.querySelectorAll(".region").forEach(el => el.classList.remove("selected"));
+    const el = document.querySelector(`.region[data-name="${name}"]`);
+    if (el) el.classList.add("selected");
+
+    const data = regionsData[name];
+    const potentialLabels = { high: "Высокий", medium: "Средний", low: "Низкий" };
+
+    document.getElementById("panelContent").innerHTML = `
+        <h2>${name}</h2>
+        <p>${data.description}</p>
+        <div class="stat-row"><span>Потенциал</span><span>${potentialLabels[data.potential]}</span></div>
+        <div class="stat-row"><span>Объём производства</span><span>${data.hops}</span></div>
+        <div class="stat-row"><span>Хозяйств</span><span>${data.farms}</span></div>
+        <div class="stat-row"><span>Площадь</span><span>${data.area}</span></div>
+        <div class="stat-row"><span>Динамика</span><span>${data.growth}</span></div>
+    `;
+}
+
+// ============================================
+// ЗУМ И ПАН
+// ============================================
+let scale = 1, translateX = 0, translateY = 0;
+let isPanning = false, startX, startY;
+
+function updateTransform() {
+    g.setAttribute("transform", `translate(${translateX}, ${translateY}) scale(${scale})`);
+}
+
+document.getElementById("zoomIn").onclick = () => {
+    scale = Math.min(scale * 1.2, 4);
+    updateTransform();
+};
+document.getElementById("zoomOut").onclick = () => {
+    scale = Math.max(scale / 1.2, 0.5);
+    updateTransform();
+};
+document.getElementById("resetView").onclick = () => {
+    scale = 1; translateX = 0; translateY = 0;
+    updateTransform();
+};
+
+svg.addEventListener("mousedown", (e) => {
+    if (e.target.closest(".zoom-controls")) return;
+    isPanning = true;
+    startX = e.clientX - translateX;
+    startY = e.clientY - translateY;
+});
+svg.addEventListener("mousemove", (e) => {
+    if (!isPanning) return;
+    translateX = e.clientX - startX;
+    translateY = e.clientY - startY;
+    updateTransform();
+});
+svg.addEventListener("mouseup", () => isPanning = false);
+svg.addEventListener("mouseleave", () => isPanning = false);
+
+svg.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 1.1 : 0.9;
+    scale = Math.min(Math.max(scale * delta, 0.5), 4);
+    updateTransform();
+}, { passive: false });
+
+// ============================================
+// НАВИГАЦИЯ
+// ============================================
+document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+        document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const view = btn.dataset.view;
+
+        if (view === "map") {
+            document.getElementById("panelContent").innerHTML = `
+                <h2>Интерактивная карта</h2>
+                <p>Выберите регион на карте, чтобы увидеть данные о потенциале и развитии хмелеводства.</p>
+                <p class="hint">💡 Используйте кнопки <b>+</b> / <b>−</b> или колесо мыши для масштабирования. Перетаскивайте карту мышью.</p>
+            `;
+        } else if (view === "stats") {
+            document.getElementById("panelContent").innerHTML = `
+                <h2>Статистика отрасли</h2>
+                <div class="stat-row"><span>Общее производство</span><span>3 800 т/год</span></div>
+                <div class="stat-row"><span>Всего хозяйств</span><span>132</span></div>
+                <div class="stat-row"><span>Общая площадь</span><span>6 940 га</span></div>
+                <div class="stat-row"><span>Средний рост</span><span>+9% в год</span></div>
+                <div class="stat-row"><span>Экспортных направлений</span><span>14</span></div>
+                <p class="hint">📊 Данные приведены на основе стратегии развития хмелеводства РФ.</p>
+            `;
+        } else if (view === "about") {
+            document.getElementById("panelContent").innerHTML = `
+                <h2>О проекте</h2>
+                <p>Развитие международных связей, расширение сети дистрибуции и поиск новых рынков сбыта укрепят позиции России на международном рынке.</p>
+                <p>Внедрение строгого контроля качества на всех этапах — от производства до торговли — обеспечит высокий стандарт продукции ХПП.</p>
+                <p>Реализация этих планов невозможна без комплексного подхода, включающего разработку специализированных программ и использование экономических инструментов: налоговые льготы, субсидии и инвестиционные стимулы.</p>
+            `;
+        }
+    });
+});
+</script>
 </body>
 </html>
