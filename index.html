@@ -1923,7 +1923,8 @@ body {
     .stats-panel { width: calc(100% - 20px); right: 10px; left: 10px; top: 60px; }
     .map-top-actions { top: 12px; }
 
-    .map-character { bottom: 12px; left: 12px; }
+    .map-character { bottom: 12px; left: 50%; transform: translateX(-50%) translateY(20px); }
+    .map-character.visible { transform: translateX(-50%) translateY(0); }
     .map-character img { width: 65px; height: 90px; }
     .map-character .speech { font-size: 11px; padding: 8px 12px; max-width: 140px; margin-bottom: 26px; }
 
