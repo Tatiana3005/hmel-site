@@ -3900,7 +3900,7 @@ document.querySelectorAll('.calc-tab').forEach(tab => {
     });
 });
 
-/* ============================================
+   /* ============================================
    ЗАГЛУШКА для runCalculator (переопределится в Части 3)
    ============================================ */
 if (typeof runCalculator !== 'function') {
@@ -3908,6 +3908,203 @@ if (typeof runCalculator !== 'function') {
         showToast('⏳ Калькулятор в разработке');
     };
 }
+
+/* ============================================
+   ЧАСТЬ 3: КАЛЬКУЛЯТОР ХМЕЛЬНИКА
+   ============================================ */
+window.runCalculator = function() {
+
+    // === Входные параметры ===
+    const area     = parseFloat(document.getElementById('cArea').value) || 0.5;
+    const scheme   = document.getElementById('cScheme').value;
+    const yieldVal = parseFloat(document.getElementById('cYield').value) || 15;
+    const soil     = document.getElementById('cSoil').value;
+    const nutri    = document.getElementById('cNutri').value;
+    const climate  = document.getElementById('cClimate').value;
+    const granulo  = document.getElementById('cGranulo').value;
+
+    // === БЛОК 1: ПОСАДКА ===
+    let rowSpacing, inRowSpacing;
+    if (scheme === "1.6x1.6")      { rowSpacing = 1.6; inRowSpacing = 1.6; }
+    else if (scheme === "2.5x1.0") { rowSpacing = 2.5; inRowSpacing = 1.0; }
+    else if (scheme === "3.0x1.0") { rowSpacing = 3.0; inRowSpacing = 1.0; }
+    else if (scheme === "3.5x1.0") { rowSpacing = 3.5; inRowSpacing = 1.0; }
+    else                           { rowSpacing = 1.6; inRowSpacing = 1.6; }
+
+    const feedArea    = rowSpacing * inRowSpacing;
+    const bushesPerHa = Math.round(10000 / feedArea);
+    const totalBushes = bushesPerHa * area;
+    const expectedYield = (yieldVal * area) / 10;
+
+    // === БЛОК 2: ШПАЛЕРА ===
+    let kPoles, kWire, gridSize;
+    if (scheme === "1.6x1.6")      { kPoles = 1.2;  kWire = 1.1;  gridSize = "6,4 × 12,8"; }
+    else if (scheme === "2.5x1.0") { kPoles = 1.0;  kWire = 1.0;  gridSize = "10 × 10"; }
+    else if (scheme === "3.0x1.0") { kPoles = 0.9;  kWire = 0.95; gridSize = "10 × 12"; }
+    else if (scheme === "3.5x1.0") { kPoles = 0.85; kWire = 0.9;  gridSize = "10 × 14"; }
+    else                           { kPoles = 1.2;  kWire = 1.1;  gridSize = "6,4 × 12,8"; }
+
+    const base = 2.04;
+    const polesCorner    = Math.round(4   / base * area * kPoles);
+    const polesEndSlant  = Math.round(46  / base * area * kPoles);
+    const polesSideSlant = Math.round(32  / base * area * kPoles);
+    const polesMiddle    = Math.round(176 / base * area * kPoles);
+    const polesTotal     = polesCorner + polesEndSlant + polesSideSlant + polesMiddle;
+
+    const wire5m  = Math.round(15600 / base * area * kWire);
+    const wire5c  = Math.round(24    / base * area * kWire * 10) / 10;
+    const wire8m  = Math.round(5400  / base * area * kWire);
+    const wire8c  = Math.round(20    / base * area * kWire * 10) / 10;
+    const wire65m = Math.round(4300  / base * area * kWire);
+    const wire65c = Math.round(11.5  / base * area * kWire * 10) / 10;
+
+    const jbMiddle = Math.round(178 / base * area * kPoles);
+    const jbSlant  = Math.round(82  / base * area * kPoles);
+    const jbTotal  = jbMiddle + jbSlant;
+    const anchors  = Math.round(168 / base * area * kPoles);
+
+    const supportWire   = Math.round(totalBushes * 2.5 * 7);
+    const supportThread = Math.round(totalBushes * 2.5 * 7);
+    const hooks         = Math.round(totalBushes * 2.5);
+
+    // === БЛОК 3: УДОБРЕНИЯ ===
+    const kYield = yieldVal / 15;
+
+    function getNutrient(table, soilType, nutriLevel) {
+        const arr = table[soilType] || [0, 0, 0];
+        if (nutriLevel === "низкая")  return arr[0];
+        if (nutriLevel === "высокая") return arr[2];
+        return arr[1];
+    }
+
+    const N_table = {
+        "дерново-подзолистая": [400, 270, 135],
+        "серая_лесная":        [270, 180, 90],
+        "чернозём":            [200, 150, 75]
+    };
+    const P_table = {
+        "дерново-подзолистая": [360, 240, 120],
+        "серая_лесная":        [300, 200, 100],
+        "чернозём":            [270, 180, 90]
+    };
+    const K_table = {
+        "дерново-подзолистая": [300, 240, 100],
+        "серая_лесная":        [360, 240, 120],
+        "чернозём":            [270, 150, 90]
+    };
+
+    const N = Math.round(getNutrient(N_table, soil, nutri) * kYield);
+    const P = Math.round(getNutrient(P_table, soil, nutri) * kYield);
+    const K = Math.round(getNutrient(K_table, soil, nutri) * kYield);
+
+    const N_main = Math.round(N * 0.6);
+    const N_top1 = Math.round(N * 0.4);
+    const P_main = Math.round(P * 0.6);
+    const P_top1 = Math.round(P * 0.2);
+    const P_top2 = Math.round(P * 0.2);
+    const K_main = Math.round(K * 0.6);
+    const K_top1 = Math.round(K * 0.2);
+    const K_top2 = Math.round(K * 0.2);
+
+    const manureMin = (nutri === "низкая") ? 50 : (nutri === "средняя" ? 40 : 30);
+    const manureMax = (nutri === "низкая") ? 60 : (nutri === "средняя" ? 60 : 40);
+
+    // === БЛОК 4: ОРОШЕНИЕ ===
+    let seasonMin, seasonMax, irrigationCount;
+    if (climate === "сухая")                 { seasonMin = 1500; seasonMax = 1800; irrigationCount = "3-4"; }
+    else if (climate === "умеренно_влажная") { seasonMin = 1000; seasonMax = 1400; irrigationCount = "1-2"; }
+    else                                     { seasonMin = 400;  seasonMax = 800;  irrigationCount = "1"; }
+
+    let singleMin, singleMax;
+    if (granulo === "песчаная")         { singleMin = 350; singleMax = 400; }
+    else if (granulo === "супесчаная")  { singleMin = 400; singleMax = 500; }
+    else if (granulo === "суглинистая") { singleMin = 550; singleMax = 650; }
+    else                                { singleMin = 700; singleMax = 800; }
+
+    const autumnCharge = 500;
+    const springCharge = 650;
+
+    // === ВЫВОД ===
+    const result = document.getElementById('calcResult');
+    const fmt = (n) => n.toLocaleString('ru-RU');
+
+    result.innerHTML = `
+        <h4>📋 Результаты расчёта</h4>
+        <div class="result-grid">
+
+            <div class="res-sub">🌱 Посадка</div>
+            <div class="res-row"><span class="rl">📐 Схема посадки</span><span class="rv">${scheme.replace('x', ' × ')} м</span></div>
+            <div class="res-row"><span class="rl">📊 Площадь питания куста</span><span class="rv">${feedArea.toFixed(2)} м²</span></div>
+            <div class="res-row highlight-row"><span class="rl">🌿 Кустов на 1 га</span><span class="rv">${fmt(bushesPerHa)} шт.</span></div>
+            <div class="res-row highlight-row"><span class="rl">🌾 Всего кустов на плантации</span><span class="rv">${fmt(totalBushes)} шт.</span></div>
+            <div class="res-row"><span class="rl">📦 Ожидаемый валовый сбор</span><span class="rv">${expectedYield.toFixed(2)} т</span></div>
+
+            <div class="res-sub">🏗 Шпалера</div>
+            <div class="res-row"><span class="rl">🪵 Угловые столбы</span><span class="rv">${fmt(polesCorner)} шт.</span></div>
+            <div class="res-row"><span class="rl">🪵 Концевые наклонные</span><span class="rv">${fmt(polesEndSlant)} шт.</span></div>
+            <div class="res-row"><span class="rl">🪵 Боковые наклонные</span><span class="rv">${fmt(polesSideSlant)} шт.</span></div>
+            <div class="res-row"><span class="rl">🪵 Средние вертикальные</span><span class="rv">${fmt(polesMiddle)} шт.</span></div>
+            <div class="res-row highlight-row"><span class="rl">📊 Всего столбов</span><span class="rv">${fmt(polesTotal)} шт.</span></div>
+            <div class="res-row"><span class="rl">🔗 Проволока 5 мм</span><span class="rv">${fmt(wire5m)} м · ${wire5c} ц</span></div>
+            <div class="res-row"><span class="rl">🔗 Проволока 8 мм</span><span class="rv">${fmt(wire8m)} м · ${wire8c} ц</span></div>
+            <div class="res-row"><span class="rl">🔗 Проволока 6,5 мм</span><span class="rv">${fmt(wire65m)} м · ${wire65c} ц</span></div>
+            <div class="res-row"><span class="rl">🧱 Ж/Б приставки (средние)</span><span class="rv">${fmt(jbMiddle)} шт.</span></div>
+            <div class="res-row"><span class="rl">🧱 Ж/Б приставки (наклонные)</span><span class="rv">${fmt(jbSlant)} шт.</span></div>
+            <div class="res-row highlight-row"><span class="rl">📊 Всего Ж/Б приставок</span><span class="rv">${fmt(jbTotal)} шт.</span></div>
+            <div class="res-row"><span class="rl">⚓ Якоря</span><span class="rv">${fmt(anchors)} шт.</span></div>
+            <div class="res-row"><span class="rl">📏 Сетка шпалеры</span><span class="rv">${gridSize} м</span></div>
+
+            <div class="res-sub">🌾 Поддержки для стеблей</div>
+            <div class="res-row"><span class="rl">🪡 Проволока 1-1,2 мм</span><span class="rv">${fmt(supportWire)} м</span></div>
+            <div class="res-row"><span class="rl">🧵 Капроновая нить</span><span class="rv">${fmt(supportThread)} м</span></div>
+            <div class="res-row"><span class="rl">🪝 Крючки</span><span class="rv">${fmt(hooks)} шт.</span></div>
+
+            <div class="res-sub">💧 Удобрения (д.в. на 1 га)</div>
+            <div class="res-row"><span class="rl">🅝 Азот (N)</span><span class="rv">${N} кг/га</span></div>
+            <div class="res-row"><span class="rl">🅟 Фосфор (P₂O₅)</span><span class="rv">${P} кг/га</span></div>
+            <div class="res-row"><span class="rl">🅚 Калий (K₂O)</span><span class="rv">${K} кг/га</span></div>
+            <div class="res-row"><span class="rl">🐄 Навоз</span><span class="rv">${manureMin}–${manureMax} т/га</span></div>
+
+            <div class="res-sub">📅 Распределение подкормок</div>
+            <div class="res-row"><span class="rl">Азот — основное (60%)</span><span class="rv">${N_main} кг/га</span></div>
+            <div class="res-row"><span class="rl">Азот — подкормка (40%)</span><span class="rv">${N_top1} кг/га</span></div>
+            <div class="res-row"><span class="rl">Фосфор — основное (60%)</span><span class="rv">${P_main} кг/га</span></div>
+            <div class="res-row"><span class="rl">Фосфор — подкормка 1 (20%)</span><span class="rv">${P_top1} кг/га</span></div>
+            <div class="res-row"><span class="rl">Фосфор — подкормка 2 (20%)</span><span class="rv">${P_top2} кг/га</span></div>
+            <div class="res-row"><span class="rl">Калий — основное (60%)</span><span class="rv">${K_main} кг/га</span></div>
+            <div class="res-row"><span class="rl">Калий — подкормка 1 (20%)</span><span class="rv">${K_top1} кг/га</span></div>
+            <div class="res-row"><span class="rl">Калий — подкормка 2 (20%)</span><span class="rv">${K_top2} кг/га</span></div>
+
+            <div class="res-sub">🚿 Орошение</div>
+            <div class="res-row"><span class="rl">💧 Сезонная норма</span><span class="rv">${fmt(seasonMin)}–${fmt(seasonMax)} м³/га</span></div>
+            <div class="res-row"><span class="rl">🔄 Поливов за сезон</span><span class="rv">${irrigationCount}</span></div>
+            <div class="res-row"><span class="rl">💦 Норма одного полива</span><span class="rv">${singleMin}–${singleMax} м³/га</span></div>
+            <div class="res-row"><span class="rl">🍂 Влагозарядка осенняя</span><span class="rv">${autumnCharge} м³/га</span></div>
+            <div class="res-row"><span class="rl">🌱 Влагозарядка весенняя</span><span class="rv">${springCharge} м³/га</span></div>
+
+            <div class="res-sub">📊 Итого по плантации (${area} га)</div>
+            <div class="res-row highlight-row"><span class="rl">🌾 Общий валовый сбор</span><span class="rv">${expectedYield.toFixed(2)} т</span></div>
+            <div class="res-row highlight-row"><span class="rl">💧 Сезонный объём орошения</span><span class="rv">${fmt(Math.round(seasonMin * area))}–${fmt(Math.round(seasonMax * area))} м³</span></div>
+            <div class="res-row highlight-row"><span class="rl">🐄 Навоз на всю плантацию</span><span class="rv">${(manureMin * area).toFixed(1)}–${(manureMax * area).toFixed(1)} т</span></div>
+
+        </div>
+    `;
+
+    result.classList.add('visible');
+    result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    showToast('✅ Расчёт готов!');
+};
+
+/* --- Живой пересчёт при изменении полей --- */
+document.querySelectorAll('#calcModal input, #calcModal select').forEach(el => {
+    el.addEventListener('change', () => {
+        if (document.getElementById('calcResult') &&
+            document.getElementById('calcResult').classList.contains('visible')) {
+            window.runCalculator();
+        }
+    });
+});
+
 </script>
 
 </body>
