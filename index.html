@@ -1991,10 +1991,10 @@ body {
         <div class="character" onclick="chooseCharacter('boy')" tabindex="0"
              onkeydown="if(event.key==='Enter')chooseCharacter('boy')">
             <div class="char-img-wrap">
-                <img src="хмельч.png" alt="Хмельч" onerror="this.parentElement.classList.add('no-image')">
+                <img src="хмелич.png" alt="Хмелич" onerror="this.parentElement.classList.add('no-image')">
                 <span class="char-emoji">🌿</span>
             </div>
-            <p>Хмельч</p>
+            <p>Хмелич</p>
         </div>
         <div class="character" onclick="chooseCharacter('girl')" tabindex="0"
              onkeydown="if(event.key==='Enter')chooseCharacter('girl')">
@@ -2738,12 +2738,12 @@ function chooseCharacter(who) {
     currentCharacter = who;
     try { localStorage.setItem('character', who); } catch (e) {}
     showScreen('screen-map');
-    showToast(who === 'girl' ? '🌸 Хмелька отправляется в путь!' : '🌿 Хмельч отправляется в путь!');
+    showToast(who === 'girl' ? '🌸 Хмелька отправляется в путь!' : '🌿 Хмелич отправляется в путь!');
     setTimeout(() => {
         const wrap = document.getElementById('mapCharacter');
         const img = document.getElementById('characterImg');
         if (!wrap || !img) return;
-        const src = who === 'girl' ? 'хмелька.png' : 'хмельч.png';
+        const src = who === 'girl' ? 'хмелька.png' : 'хмелич.png';
         img.src = src;
         img.onerror = () => {
             img.style.display = 'none';
