@@ -3475,6 +3475,440 @@ function runCalculator() {
     /* Полная реализация — в Части 3 */
     showToast('⏳ Калькулятор в разработке');
 }
+   /* ============================================
+   ЧАСТЬ 2Б: БЕЛАРУСЬ + ПРОИЗВОДСТВО + ПЛАТФОРМА
+   ============================================ */
+
+/* ============================================
+   КАРТА: БЕЛАРУСЬ
+   ============================================ */
+const belarusData = {
+    "Гомельская область": {
+        potential: "high",
+        hops: "320 т/год", farms: 12, area: "540 га", growth: "+10%",
+        description: "Ведущий регион хмелеводства Беларуси. Мягкий климат, плодородные почвы, исторические традиции выращивания хмеля. Высоко ценится в пивоварении."
+    },
+    "Брестская область": {
+        potential: "medium",
+        hops: "180 т/год", farms: 8, area: "320 га", growth: "+6%",
+        description: "Второй по значимости регион Беларуси. Развивается благодаря научно обоснованному подбору сортов с учётом почвенно-климатических особенностей."
+    }
+};
+
+const belarusRegions = [
+    { name: "Гомельская область", short: "Гомельская\nобласть", points: "180,180 340,160 400,240 360,360 200,380 130,300", labelX: 0, labelY: 0, iconDY: -70 },
+    { name: "Брестская область",  short: "Брестская\nобласть",  points: "480,180 640,170 700,260 650,380 500,400 430,300", labelX: 0, labelY: 0, iconDY: -70 }
+];
+
+let belInitialized = false;
+let belSvg, belG, belLinksG, belRegionsG, belMarkersG;
+let belScale = 1, belTx = 0, belTy = 0;
+
+/* Переопределяем функцию-заглушку из Части 2А */
+initBelarusMap = function() {
+    if (belInitialized) return;
+    belInitialized = true;
+
+    belSvg = document.getElementById('belarusMap');
+    if (!belSvg) return;
+
+    const NS = "http://www.w3.org/2000/svg";
+    belG = document.createElementNS(NS, "g");
+    belSvg.appendChild(belG);
+    belRegionsG = document.createElementNS(NS, "g");
+    belMarkersG = document.createElementNS(NS, "g");
+    belG.appendChild(belRegionsG);
+    belG.appendChild(belMarkersG);
+
+    // Фон — очертание Беларуси (стилизованное)
+    const bgPath = document.createElementNS(NS, "path");
+    bgPath.setAttribute("d", "M110,160 Q170,120 300,140 L420,150 Q550,150 680,170 L740,260 Q740,340 700,400 L580,420 Q400,420 220,400 L120,340 Q90,260 110,160 Z");
+    bgPath.setAttribute("fill", "#ffffff");
+    bgPath.setAttribute("opacity", "0.55");
+    bgPath.setAttribute("stroke", "#c5d8cc");
+    bgPath.setAttribute("stroke-width", "1.5");
+    bgPath.setAttribute("stroke-dasharray", "6,6");
+    bgPath.setAttribute("pointer-events", "none");
+    belG.appendChild(bgPath);
+
+    belarusRegions.forEach(region => {
+        const data = belarusData[region.name];
+        if (!data) return;
+
+        const coords = region.points.split(" ").map(p => p.split(",").map(Number));
+        const cx = coords.reduce((s, p) => s + p[0], 0) / coords.length;
+        const cy = coords.reduce((s, p) => s + p[1], 0) / coords.length;
+
+        const poly = document.createElementNS(NS, "polygon");
+        poly.setAttribute("points", region.points);
+        poly.setAttribute("class", `region ${data.potential}`);
+        poly.dataset.name = region.name;
+        poly.dataset.potential = data.potential;
+        poly.setAttribute("tabindex", "0");
+        poly.setAttribute("filter", "url(#regionShadowBel)");
+
+        poly.addEventListener("click", (e) => {
+            e.stopPropagation();
+            belSelectRegion(region.name);
+        });
+        poly.addEventListener("mouseenter", (e) => {
+            showTooltipGeneric(belSvg, "belarusTooltip", e, region.name, (n) => belarusData[n]);
+        });
+        poly.addEventListener("mousemove", (e) => moveTooltipGeneric(belSvg, "belarusTooltip", e));
+        poly.addEventListener("mouseleave", () => hideTooltipGeneric("belarusTooltip"));
+
+        belRegionsG.appendChild(poly);
+
+        // Подпись
+        const lines = region.short.split("\n");
+        const label = document.createElementNS(NS, "text");
+        label.setAttribute("x", cx + (region.labelX || 0));
+        label.setAttribute("y", cy + (region.labelY || 0) - (lines.length - 1) * 6);
+        label.setAttribute("class", "region-label" + (data.potential === "low" ? " on-light" : ""));
+        lines.forEach((line, i) => {
+            const tspan = document.createElementNS(NS, "tspan");
+            tspan.setAttribute("x", cx + (region.labelX || 0));
+            tspan.setAttribute("dy", i === 0 ? "0" : "12");
+            tspan.textContent = line;
+            label.appendChild(tspan);
+        });
+        belRegionsG.appendChild(label);
+
+        // Маркер
+        const marker = document.createElementNS(NS, "g");
+        marker.setAttribute("class", "region-marker");
+        const mY = cy + (region.iconDY || -16);
+
+        const circle = document.createElementNS(NS, "circle");
+        circle.setAttribute("cx", cx);
+        circle.setAttribute("cy", mY);
+        circle.setAttribute("r", 11);
+
+        const ico = document.createElementNS(NS, "text");
+        ico.setAttribute("x", cx);
+        ico.setAttribute("y", mY);
+        ico.textContent = potentialIcons[data.potential];
+
+        marker.appendChild(circle);
+        marker.appendChild(ico);
+        belMarkersG.appendChild(marker);
+
+        if (data.potential === "high") {
+            for (let i = 0; i < 3; i++) {
+                const ring = document.createElementNS(NS, "circle");
+                ring.setAttribute("cx", cx);
+                ring.setAttribute("cy", mY);
+                ring.setAttribute("r", 12);
+                ring.setAttribute("class", "pulse-ring r" + (i + 1));
+                belMarkersG.appendChild(ring);
+            }
+        }
+    });
+
+    // Пан/зум
+    let isPanning = false, startX, startY;
+    belSvg.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.zoom-controls, .legend, .compass, .map-bottom-bar')) return;
+        isPanning = true;
+        startX = e.clientX - belTx;
+        startY = e.clientY - belTy;
+        belSvg.style.cursor = 'grabbing';
+    });
+    belSvg.addEventListener('mousemove', (e) => {
+        if (!isPanning) return;
+        belTx = e.clientX - startX;
+        belTy = e.clientY - startY;
+        updateBelTransform();
+    });
+    belSvg.addEventListener('mouseup', () => { isPanning = false; belSvg.style.cursor = 'grab'; });
+    belSvg.addEventListener('mouseleave', () => { isPanning = false; belSvg.style.cursor = 'grab'; });
+    belSvg.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        belZoom(e.deltaY < 0 ? 1.12 : 0.89);
+    }, { passive: false });
+};
+
+function updateBelTransform() {
+    if (belG) belG.setAttribute('transform', `translate(${belTx}, ${belTy}) scale(${belScale})`);
+}
+function belZoom(f) {
+    belScale = Math.min(Math.max(belScale * f, 0.6), 4);
+    updateBelTransform();
+}
+function belReset() {
+    belScale = 1; belTx = 0; belTy = 0;
+    updateBelTransform();
+    showToast('🔄 Вид сброшен');
+}
+function belSelectRegion(name) {
+    document.querySelectorAll('#belarusMap .region').forEach(el => el.classList.remove('selected'));
+    const el = document.querySelector(`#belarusMap .region[data-name="${name}"]`);
+    if (el) el.classList.add('selected');
+
+    const data = belarusData[name];
+    const potentialLabels = { high: "Высокий", medium: "Средний", low: "Низкий" };
+    const fillPercent = { high: 100, medium: 60, low: 30 };
+
+    const panel = document.getElementById('belarusPanel');
+    if (panel) {
+        panel.innerHTML = `
+            <h2>${potentialIcons[data.potential]} ${name}</h2>
+            <p>${data.description}</p>
+            <div class="potential-bar">
+                <div class="p-title">Уровень потенциала</div>
+                <div class="p-track">
+                    <div class="p-fill ${data.potential}" style="width: ${fillPercent[data.potential]}%"></div>
+                </div>
+            </div>
+            <div class="stat-row"><span class="label"><span class="ico">⭐</span> Потенциал</span><span class="value">${potentialLabels[data.potential]}</span></div>
+            <div class="stat-row"><span class="label"><span class="ico">🌾</span> Производство</span><span class="value">${data.hops}</span></div>
+            <div class="stat-row"><span class="label"><span class="ico">🏡</span> Хозяйств</span><span class="value">${data.farms}</span></div>
+            <div class="stat-row"><span class="label"><span class="ico">📐</span> Площадь</span><span class="value">${data.area}</span></div>
+            <div class="stat-row"><span class="label"><span class="ico">📈</span> Динамика</span><span class="value">${data.growth} за 3 года</span></div>
+        `;
+    }
+    showToast('📍 ' + name);
+}
+
+/* ============================================
+   ПРОИЗВОДСТВО: карточки продуктов
+   ============================================ */
+const productsData = [
+    {
+        emoji: "🌾",
+        title: "Шишковый хмель",
+        intro: "Сушёные шишки хмеля — классика пивоварения.",
+        recipe: "Их сушат при 60°C, прессуют и упаковывают.",
+        proportions: "Занимают около 40% мирового рынка хмелепродуктов.",
+        role: "Основа для традиционного пивоварения. Используется на этапе кипячения сусла.",
+        fact: "Самый древний способ — использовался ещё в Древней Руси."
+    },
+    {
+        emoji: "💊",
+        title: "Гранулированный хмель",
+        intro: "Измельчённые и спрессованные шишки.",
+        recipe: "Гранулы диаметром 2–5 мм упаковывают в вакуум.",
+        proportions: "Занимают меньше места и хранятся до 5 лет.",
+        role: "Именно их чаще всего используют современные пивоварни.",
+        fact: "Около 30% мирового рынка — это гранулы."
+    },
+    {
+        emoji: "🧪",
+        title: "Хмелевой экстракт",
+        intro: "Густая вытяжка из хмеля.",
+        recipe: "Получают с помощью растворителя (спирт, CO₂ или вода).",
+        proportions: "Позволяет сэкономить до 50% хмеля и точно дозировать горечь.",
+        role: "Добавляется для точной горечи и аромата.",
+        fact: "Бывает обычный и изомеризованный — второй добавляют уже после варки."
+    },
+    {
+        emoji: "💧",
+        title: "Эфирное масло хмеля",
+        intro: "Прозрачная жидкость с сильным хмелевым запахом.",
+        recipe: "Получают отгонкой с водяным паром.",
+        proportions: "Используется для тонкого аромата в премиальном пиве.",
+        role: "Применяется также в косметике и парфюмерии.",
+        fact: "Именно масла отвечают за «нотки» — цитрусовые, цветочные, травяные."
+    },
+    {
+        emoji: "⚗️",
+        title: "Лупулиновые препараты",
+        intro: "Обогащённые гранулы с повышенным содержанием альфа-кислот.",
+        recipe: "Дают стабильную горечь и снижают расход сырья.",
+        proportions: "Созданы для точного контроля вкуса.",
+        role: "Используются в промышленном пивоварении для стандартизации партий.",
+        fact: "Название пошло от латинского названия хмеля — Humulus lupulus."
+    },
+    {
+        emoji: "💊",
+        title: "Хмель для фармацевтики",
+        intro: "Используется в успокоительных средствах, седативных препаратах и БАДах.",
+        recipe: "Хмель обладает мягким успокаивающим эффектом.",
+        proportions: "Входит в состав сборов, настоек, капсул.",
+        role: "Сырьё для фармацевтической и косметической промышленности.",
+        fact: "Ещё в средние века хмель добавляли в подушки для сна."
+    },
+    {
+        emoji: "🍺",
+        title: "Пиво",
+        intro: "Главный продукт, ради которого всё это делается.",
+        recipe: "Хмель придаёт пиву горечь и аромат, работает как консервант.",
+        proportions: "Отвечает за стойкость пены и характер напитка.",
+        role: "Без хмеля пиво не было бы пивом.",
+        fact: "На Руси хмель в пивоварении начали использовать раньше, чем в Западной Европе."
+    }
+];
+
+/* Переопределяем функцию-заглушку из Части 2А */
+renderProducts = function() {
+    const grid = document.getElementById('productsGrid');
+    if (!grid || grid.children.length > 0) return;
+
+    productsData.forEach((p, idx) => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.dataset.idx = idx;
+        card.innerHTML = `
+            <div class="pc-head" onclick="toggleProduct(${idx})">
+                <span class="pc-emoji">${p.emoji}</span>
+                <span class="pc-title">${p.title}</span>
+                <span class="pc-toggle">+</span>
+            </div>
+            <div class="pc-body">
+                <div class="pc-body-inner">
+                    <p>${p.intro}</p>
+                    <div class="pc-sub"><span class="ico">📖</span> Рецепт</div>
+                    <p>${p.recipe}</p>
+                    <div class="pc-sub"><span class="ico">⚖️</span> Пропорции</div>
+                    <p>${p.proportions}</p>
+                    <div class="pc-sub"><span class="ico">🌿</span> Роль хмеля</div>
+                    <p>${p.role}</p>
+                    <div class="fact">💡 ${p.fact}</div>
+                </div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+};
+
+function toggleProduct(idx) {
+    const card = document.querySelector(`.product-card[data-idx="${idx}"]`);
+    if (!card) return;
+    card.classList.toggle('open');
+}
+
+/* ============================================
+   ПЛАТФОРМА: линии между центром и группами
+   ============================================ */
+/* Переопределяем функцию-заглушку из Части 2А */
+drawEcoLines = function() {
+    const svg = document.getElementById('ecoLines');
+    const eco = document.getElementById('ecosystem');
+    if (!svg || !eco) return;
+    if (svg.children.length > 0) return;
+
+    const NS = "http://www.w3.org/2000/svg";
+    const cx = 460, cy = 310;
+
+    // Точки, куда идут линии (верх / право / низ / лево)
+    const targets = [
+        { group: 'finance', x: 460, y: 60 },
+        { group: 'prod',    x: 850, y: 310 },
+        { group: 'science', x: 460, y: 560 },
+        { group: 'market',  x: 70,  y: 310 }
+    ];
+
+    targets.forEach(t => {
+        const line = document.createElementNS(NS, "line");
+        line.setAttribute("x1", cx);
+        line.setAttribute("y1", cy);
+        line.setAttribute("x2", t.x);
+        line.setAttribute("y2", t.y);
+        line.setAttribute("class", "eco-link");
+        line.dataset.group = t.group;
+        svg.appendChild(line);
+    });
+
+    // Тултипы на карточках
+    document.querySelectorAll('.eco-card').forEach(card => {
+        card.addEventListener('mouseenter', (e) => {
+            const info = card.dataset.info;
+            const groupEl = card.closest('.eco-group');
+            if (groupEl) {
+                const groupName = groupEl.dataset.group;
+                svg.querySelectorAll('.eco-link').forEach(l => {
+                    l.classList.toggle('highlight', l.dataset.group === groupName);
+                });
+            }
+            if (info) {
+                card.setAttribute('title', info);
+                showEcoTooltip(card, info);
+            }
+        });
+        card.addEventListener('mouseleave', () => {
+            svg.querySelectorAll('.eco-link').forEach(l => l.classList.remove('highlight'));
+            hideEcoTooltip();
+        });
+    });
+};
+
+function showEcoTooltip(el, text) {
+    let tip = document.getElementById('ecoFloatingTip');
+    if (!tip) {
+        tip = document.createElement('div');
+        tip.id = 'ecoFloatingTip';
+        tip.style.cssText = `
+            position: fixed;
+            background: rgba(20, 64, 31, 0.97);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 500;
+            line-height: 1.5;
+            max-width: 280px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+            border: 1px solid rgba(212,165,58,0.5);
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        `;
+        document.body.appendChild(tip);
+    }
+    tip.textContent = text;
+    tip.style.opacity = '1';
+    const r = el.getBoundingClientRect();
+    tip.style.left = Math.min(window.innerWidth - 300, r.left + r.width / 2 - 140) + 'px';
+    tip.style.top = (r.top - tip.offsetHeight - 12) + 'px';
+}
+function hideEcoTooltip() {
+    const tip = document.getElementById('ecoFloatingTip');
+    if (tip) tip.style.opacity = '0';
+}
+
+/* ============================================
+   МОДАЛКИ: расширение (закрытие по фону, Esc)
+   ============================================ */
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.classList.remove('visible');
+    });
+});
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.visible').forEach(m => m.classList.remove('visible'));
+        if (document.getElementById('screen-map').classList.contains('active')) {
+            const activeTab = document.querySelector('.nav-btn.active');
+            if (activeTab && activeTab.dataset.tab !== 'exit') {
+                // Не выходим на главную, если открыта вкладка
+            }
+        }
+    }
+});
+
+/* ============================================
+   ВКЛАДКИ КАЛЬКУЛЯТОРА (переключение)
+   ============================================ */
+document.querySelectorAll('.calc-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        const target = tab.dataset.calcTab;
+        document.querySelectorAll('.calc-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.calc-panel').forEach(p => p.classList.remove('active'));
+        const panel = document.querySelector(`.calc-panel[data-calc-panel="${target}"]`);
+        if (panel) panel.classList.add('active');
+    });
+});
+
+/* ============================================
+   ЗАГЛУШКА для runCalculator (переопределится в Части 3)
+   ============================================ */
+if (typeof runCalculator !== 'function') {
+    window.runCalculator = function() {
+        showToast('⏳ Калькулятор в разработке');
+    };
+}
 </script>
 
 </body>
