@@ -2000,7 +2000,7 @@ body {
         <div class="character" onclick="chooseCharacter('boy')" tabindex="0"
              onkeydown="if(event.key==='Enter')chooseCharacter('boy')">
             <div class="char-img-wrap">
-                <img src="хмелич.png" alt="Хмелич" onerror="this.parentElement.classList.add('no-image')">
+                <img src="hmelich.png" alt="Хмелич" onerror="this.parentElement.classList.add('no-image')">
                 <span class="char-emoji">🌿</span>
             </div>
             <p>Хмелич</p>
@@ -2008,7 +2008,7 @@ body {
         <div class="character" onclick="chooseCharacter('girl')" tabindex="0"
              onkeydown="if(event.key==='Enter')chooseCharacter('girl')">
             <div class="char-img-wrap">
-                <img src="хмелька.png" alt="Хмелька" onerror="this.parentElement.classList.add('no-image')">
+                <img src="hmelka.png" alt="Хмелька" onerror="this.parentElement.classList.add('no-image')">
                 <span class="char-emoji">🌸</span>
             </div>
             <p>Хмелька</p>
@@ -2752,7 +2752,7 @@ function chooseCharacter(who) {
         const wrap = document.getElementById('mapCharacter');
         const img = document.getElementById('characterImg');
         if (!wrap || !img) return;
-        const src = who === 'girl' ? 'хмелька.png' : 'хмелич.png';
+        const src = who === 'girl' ? 'hmelka.png' : 'hmelich.png';
         img.src = src;
         img.onerror = () => {
             img.style.display = 'none';
