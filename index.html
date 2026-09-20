@@ -34,9 +34,14 @@
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 body {
     font-family: 'Manrope', system-ui, -apple-system, sans-serif;
-    overflow-x: hidden;
     color: #fff;
     background: #0a1a10;
 }
@@ -90,6 +95,7 @@ body {
     text-align: center;
     padding: 40px 20px;
     animation: fadeIn 0.8s ease;
+    width: 100%;
 }
 .screen.active { display: flex; }
 @keyframes fadeIn {
@@ -264,8 +270,10 @@ body {
     justify-content: flex-start;
     color: var(--text);
     min-height: 100vh;
+    width: 100%;
 }
 #screen-map.active { display: flex; }
+
 .header {
     background: linear-gradient(135deg, rgba(13, 43, 26, 0.95), rgba(26, 77, 46, 0.95));
     backdrop-filter: blur(14px);
@@ -281,6 +289,7 @@ body {
     top: 0;
     z-index: 100;
     border-bottom: 1px solid rgba(212, 165, 58, 0.25);
+    width: 100%;
 }
 .logo { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .logo-icon { font-size: 26px; }
@@ -331,10 +340,9 @@ body {
     max-width: 1700px;
     width: 100%;
     margin: 0 auto;
-    align-items: stretch;
 }
 .main.single { grid-template-columns: 1fr; max-width: 1200px; }
-.tab-panel { display: none; }
+.tab-panel { display: none; width: 100%; }
 .tab-panel.active { display: block; }
 
 .map-container {
@@ -345,6 +353,8 @@ body {
     overflow: hidden;
     position: relative;
     border: 1px solid rgba(255,255,255,0.6);
+    width: 100%;
+    min-width: 0;
 }
 .map-wrapper {
     position: relative;
@@ -401,12 +411,6 @@ body {
 .region.dimmed { opacity: 0.18; pointer-events: none; }
 .region.historic { fill: url(#gradHistoric); }
 .region.historic:hover { stroke: var(--gold); stroke-width: 2.5; }
-#historyMap .region.selected {
-    stroke: var(--green-500);
-    stroke-width: 3.5;
-    stroke-linejoin: round;
-    filter: brightness(1.2) drop-shadow(0 6px 20px rgba(76,175,80,0.8));
-}
 
 .region-label {
     font-family: 'Manrope', sans-serif;
@@ -573,7 +577,6 @@ body {
     cursor: pointer; border-radius: 8px;
     font-family: inherit;
     display: flex; align-items: center; justify-content: center;
-    touch-action: manipulation;
 }
 .zoom-controls button:hover { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
 .zoom-controls .divider { height: 1px; background: rgba(45,122,79,0.15); margin: 2px 4px; }
@@ -602,7 +605,6 @@ body {
     font-family: inherit;
     transition: var(--transition);
     box-shadow: var(--shadow-sm);
-    touch-action: manipulation;
 }
 .map-btn:hover { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); transform: translateY(-2px); }
 
@@ -652,16 +654,17 @@ body {
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     padding: 24px;
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+    position: sticky;
+    top: 90px;
     color: var(--text);
     border: 1px solid rgba(255,255,255,0.6);
+    min-height: 500px;
     position: relative;
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
 }
 #panelContent, #historyPanel, #belarusPanel {
-    flex: 1;
-    padding-bottom: 100px;
+    padding-bottom: 160px;
 }
 #panelContent h2, .info-panel h2 {
     font-family: 'Unbounded', sans-serif;
@@ -857,7 +860,6 @@ body {
     cursor: pointer;
     font-family: inherit;
     box-shadow: 0 6px 18px rgba(212,165,58,0.35);
-    touch-action: manipulation;
 }
 .stats-toggle-btn:hover { background: linear-gradient(135deg, var(--gold), #b8901f); color: #fff; }
 .stats-toggle-btn.active { background: linear-gradient(135deg, var(--gold), #b8901f); color: #fff; }
@@ -935,7 +937,6 @@ body {
     color: var(--green-600);
     letter-spacing: 0.5px;
     padding: 0 2px;
-    text-shadow: 0 1px 2px rgba(76, 175, 80, 0.15);
 }
 .history-text-block.collapsed .history-paragraph {
     display: -webkit-box;
@@ -968,7 +969,6 @@ body {
     gap: 8px;
     box-shadow: 0 6px 18px rgba(76,175,80,0.4);
 }
-.expand-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(76,175,80,0.6); }
 .expand-btn .arrow { transition: transform 0.3s; }
 .history-text-block:not(.collapsed) .expand-btn .arrow { transform: rotate(180deg); }
 
@@ -1010,7 +1010,6 @@ body {
     font-family: inherit;
     transition: var(--transition);
 }
-.production-tab:hover { border-color: var(--green-500); }
 .production-tab.active {
     background: linear-gradient(135deg, var(--green-500), var(--green-600));
     color: #fff;
@@ -1044,7 +1043,6 @@ body {
     min-height: 80px;
 }
 .product-card .pc-emoji { font-size: 38px; line-height: 1; flex-shrink: 0; transition: transform 0.4s; }
-.product-card:hover .pc-emoji { transform: scale(1.15) rotate(-5deg); }
 .product-card .pc-title {
     font-family: 'Unbounded', sans-serif;
     font-size: 15px;
@@ -1105,6 +1103,7 @@ body {
     overflow: hidden;
     position: relative;
     min-height: 800px;
+    width: 100%;
 }
 .platform-title { font-family: 'Unbounded', sans-serif; font-size: 26px; color: var(--green-800); text-align: center; margin-bottom: 8px; }
 .platform-subtitle { text-align: center; color: var(--text-soft); font-size: 14.5px; margin-bottom: 30px; }
@@ -1140,13 +1139,11 @@ body {
     0%, 100% { box-shadow: 0 0 0 8px rgba(76,175,80,0.15), 0 0 0 16px rgba(76,175,80,0.08), 0 20px 40px rgba(26,77,46,0.5); }
     50% { box-shadow: 0 0 0 12px rgba(76,175,80,0.22), 0 0 0 24px rgba(76,175,80,0.1), 0 20px 50px rgba(26,77,46,0.6); }
 }
-.eco-center:hover { transform: translate(-50%, -50%) scale(1.05); }
 .eco-center .eco-icon { font-size: 42px; margin-bottom: 8px; }
 .eco-center .eco-name { font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 700; line-height: 1.25; margin-bottom: 6px; }
 .eco-center .eco-hint { font-size: 10.5px; opacity: 0.85; text-transform: uppercase; letter-spacing: 1px; }
 
 .eco-group { position: absolute; z-index: 2; display: flex; flex-direction: column; gap: 6px; width: 220px; }
-
 .eco-group.g-science.pos-top { top: 10px; left: 50%; transform: translateX(-115%); align-items: flex-end; }
 .eco-group.g-agro.pos-top-2 { top: 10px; left: 50%; transform: translateX(15%); align-items: flex-start; }
 .eco-group.pos-right { top: 50%; right: 20px; transform: translateY(-50%); align-items: flex-end; }
@@ -1194,7 +1191,6 @@ body {
     line-height: 1.3;
     width: 100%;
 }
-.eco-card:hover { border-color: var(--gold); transform: scale(1.05); box-shadow: 0 8px 20px rgba(212,165,58,0.35); z-index: 5; }
 .eco-card.active { border-color: var(--gold); background: linear-gradient(135deg, #fff8e1, #fef3c7); }
 .eco-card-btn { font-family: inherit; width: 100%; }
 
@@ -1265,7 +1261,7 @@ body {
     gap: 12px;
     text-align: left;
 }
-.modal-action:hover { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); transform: translateX(4px); }
+.modal-action:hover { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
 .modal-action .ico { font-size: 22px; flex-shrink: 0; }
 .modal-action .arr { margin-left: auto; color: var(--green-500); font-weight: 800; }
 
@@ -1307,7 +1303,7 @@ body {
     background: #fff;
     outline: none;
 }
-.calc-field input:focus, .calc-field select:focus { border-color: var(--green-500); box-shadow: 0 0 0 4px rgba(76,175,80,0.15); }
+.calc-field input:focus, .calc-field select:focus { border-color: var(--green-500); }
 .calc-field .hint-small { font-size: 11px; color: #8a938d; font-style: italic; }
 .calc-btn {
     grid-column: 1 / -1;
@@ -1324,7 +1320,6 @@ body {
     box-shadow: 0 8px 20px rgba(76,175,80,0.4);
     width: 100%;
 }
-.calc-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(76,175,80,0.55); }
 .calc-result {
     margin-top: 20px;
     padding: 20px;
@@ -1377,7 +1372,6 @@ body {
     transition: var(--transition);
     padding: 26px 20px 22px;
 }
-.team-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--gold); }
 .team-photo {
     width: 140px;
     height: 140px;
@@ -1406,6 +1400,7 @@ body {
     background: rgba(13, 43, 26, 0.9);
     backdrop-filter: blur(10px);
     border-top: 1px solid rgba(212, 165, 58, 0.2);
+    width: 100%;
 }
 .footer p { margin: 0; }
 
@@ -1430,6 +1425,9 @@ body {
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* ============================================
+   ПЛАНШЕТ 900px
+   ============================================ */
 @media (max-width: 1200px) {
     .main { grid-template-columns: 1fr 340px; gap: 16px; padding: 16px; }
     .eco-group { width: 180px; }
@@ -1444,10 +1442,28 @@ body {
 }
 
 /* ============================================
-   ПЛАНШЕТ (900px)
+   ПЛАНШЕТ 900px — карта/панель в столбец
    ============================================ */
 @media (max-width: 900px) {
-    .main { grid-template-columns: 1fr; padding: 12px; gap: 12px; }
+    .main { 
+        grid-template-columns: 1fr; 
+        padding: 12px; 
+        gap: 12px;
+        width: 100%;
+        max-width: 100%;
+    }
+    .main.single { grid-template-columns: 1fr; }
+    .tab-panel { width: 100%; }
+    
+    .map-container,
+    .info-panel,
+    .history-text-block,
+    .map-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+    
     .info-panel { 
         max-height: none; 
         position: static; 
@@ -1462,21 +1478,24 @@ body {
     .minimap { display: none; }
     .compass { display: none; }
     .stats-panel { width: 280px; right: 12px; }
+    
     .ecosystem { height: auto; display: flex; flex-direction: column; gap: 20px; }
     .eco-svg { display: none; }
     .eco-center { position: relative; top: auto; left: auto; transform: none; margin: 0 auto 20px; animation: none; }
     .eco-group { position: static; transform: none !important; width: 100%; align-items: center; }
-    .eco-group.pos-top, .eco-group.pos-top-2, .eco-group.pos-right, .eco-group.pos-bottom, .eco-group.pos-left, .eco-group.pos-left-2, .eco-group.pos-left-3 {
+    .eco-group.pos-top, .eco-group.pos-top-2, .eco-group.pos-right, .eco-group.pos-bottom, 
+    .eco-group.pos-left, .eco-group.pos-left-2, .eco-group.pos-left-3 {
         top: auto; right: auto; bottom: auto; left: auto;
         transform: none;
     }
+    
     .panel-character { width: 110px; height: 145px; bottom: 20px; right: 20px; }
     .panel-character .panel-char-emoji { font-size: 75px; }
     .char-popup { width: 300px; }
 }
 
 /* ============================================
-   МОБИЛЬНЫЙ (600px)
+   МОБИЛЬНЫЙ 600px
    ============================================ */
 @media (max-width: 600px) {
     .logo-badge { font-size: 11px; padding: 6px 16px; }
@@ -1490,26 +1509,22 @@ body {
     .character p { font-size: 17px; margin-top: 16px; }
     .contact-card { padding: 28px 24px; }
     
-    /* КАРТЫ — не обрезаются и работают как в Терруарах */
+    /* Карта на всю ширину */
     .map-wrapper { 
         min-height: 460px;
-        max-height: 70vh;
-    }
-    .map-svg {
-        touch-action: none;
     }
     
-    .legend { font-size: 11px; padding: 10px 12px; top: 12px; left: 12px; }
+    .legend { font-size: 11px; padding: 10px 12px; top: 12px; left: 12px; max-width: 160px; }
     .legend h3 { font-size: 10px; }
-    .legend-item { padding: 4px 6px; gap: 8px; font-size: 11px; }
-    .dot { width: 12px; height: 12px; }
+    .legend-item { padding: 4px 6px; gap: 6px; font-size: 10.5px; }
+    .dot { width: 11px; height: 11px; }
     
     .zoom-controls { bottom: 14px; right: 14px; padding: 6px; }
     .zoom-controls button { width: 38px; height: 38px; font-size: 17px; }
     
     .map-bottom-bar { 
         left: 12px; 
-        right: 70px; 
+        right: 66px; 
         bottom: 14px; 
         gap: 6px;
     }
@@ -1521,15 +1536,15 @@ body {
         right: 10px; 
         left: 10px; 
         top: 60px; 
+        max-width: none;
     }
     
     .history-text-block { padding: 20px 18px; }
     .history-text-block h2 { font-size: 18px; }
-    .history-paragraph { font-size: 14px; }
+    .history-paragraph { font-size: 13.5px; }
     
     .production-intro { padding: 18px 20px; }
     .production-intro h2 { font-size: 19px; }
-    .production-intro p { font-size: 13.5px; }
     .products-grid { grid-template-columns: 1fr; gap: 12px; }
     .product-card .pc-head { padding: 16px 18px; }
     .product-card .pc-emoji { font-size: 34px; }
@@ -1549,17 +1564,13 @@ body {
     .team-grid { grid-template-columns: 1fr; gap: 14px; }
     .team-photo { width: 110px; height: 110px; font-size: 48px; }
     
-    /* Персонаж — оставляем большим */
     .panel-character { width: 100px; height: 135px; bottom: 14px; right: 14px; }
     .panel-character .panel-char-emoji { font-size: 68px; }
     
-    /* Попап — на всю ширину */
     .char-popup { 
         width: calc(100vw - 20px) !important;
         max-width: 360px;
     }
-    .char-popup-hint { font-size: 12px; }
-    .char-popup-action { font-size: 12px; padding: 9px 11px; }
 }
 
 @media (max-width: 360px) {
@@ -2169,11 +2180,9 @@ function createFireflies() {
 createFireflies();
 
 /* ============================================
-   ВСПОМОГАТЕЛЬНОЕ: TOUCH ДЛЯ КАРТ
-   Универсальная функция — как в Терруарах
+   УНИВЕРСАЛЬНЫЕ TOUCH-ЖЕСТЫ ДЛЯ КАРТ
    ============================================ */
 function attachTouchGestures(svg, handlers) {
-    // handlers = { getTx, getTy, setTx, setTy, getScale, setScale, update }
     let lastDist = 0;
     let isPanning = false;
     let startX = 0, startY = 0;
@@ -2309,7 +2318,7 @@ function restoreCharacter() {
 window.addEventListener('load', restoreCharacter);
 
 /* ============================================
-   ПАНЕЛЬ ПОДСКАЗОК ПЕРСОНАЖА
+   ПАНЕЛЬ ПОДСКАЗОК
    ============================================ */
 const charHints = {
     history: {
@@ -2545,7 +2554,7 @@ function hideTooltipGeneric(tooltipId) {
 }
 
 /* ============================================
-   КАРТА ИСТОРИИ — с touch как в Терруарах
+   КАРТА ИСТОРИИ
    ============================================ */
 let histInitialized = false;
 let histSvg, histG, histScale = 1, histTx = 0, histTy = 0;
@@ -2598,7 +2607,6 @@ function initHistoryMap() {
         histG.appendChild(label);
     });
 
-    // Мышь
     let isPanning = false, startX, startY;
     histSvg.addEventListener('mousedown', (e) => {
         if (e.target.closest('.zoom-controls, .legend, .compass, .map-bottom-bar')) return;
@@ -2616,7 +2624,6 @@ function initHistoryMap() {
         histZoom(e.deltaY < 0 ? 1.12 : 0.89);
     }, { passive: false });
 
-    // Touch — как в Терруарах
     attachTouchGestures(histSvg, {
         getTx: () => histTx,
         getTy: () => histTy,
@@ -2647,7 +2654,7 @@ function histSelectRegion(name) {
 }
 
 /* ============================================
-   КАРТА ТЕРРУАРОВ — эталонная
+   КАРТА ТЕРРУАРОВ
    ============================================ */
 let terInitialized = false;
 let terSvg, terG, terLinksG, terRegionsG, terMarkersG, terRouteG;
@@ -2752,7 +2759,6 @@ function initTerroirsMap() {
     updateTerLegendCounts();
     buildTerMinimap();
 
-    // Мышь
     let isPanning = false, startX, startY;
     terSvg.addEventListener('mousedown', (e) => {
         if (e.target.closest('.zoom-controls, .legend, .compass, .minimap, .map-bottom-bar, .map-top-actions, .stats-panel')) return;
@@ -2780,7 +2786,6 @@ function initTerroirsMap() {
         terZoom(e.deltaY < 0 ? 1.12 : 0.89);
     }, { passive: false });
 
-    // Touch — эталон
     attachTouchGestures(terSvg, {
         getTx: () => terTx,
         getTy: () => terTy,
@@ -2951,7 +2956,7 @@ function toggleStatsPanel() {
 }
 
 /* ============================================
-   КАРТА БЕЛАРУСИ — теперь с touch как в Терруарах
+   КАРТА БЕЛАРУСИ
    ============================================ */
 const belarusData = {
     "Гомельская область": { potential: "high", hops: "320 т/год", farms: 12, area: "540 га", growth: "+10%", description: "Ведущий регион хмелеводства Беларуси. Мягкий климат, плодородные почвы." },
@@ -3044,7 +3049,6 @@ function initBelarusMap() {
         }
     });
 
-    // Мышь
     let isPanning = false, startX, startY;
     belSvg.addEventListener('mousedown', (e) => {
         if (e.target.closest('.zoom-controls, .legend, .compass, .map-bottom-bar')) return;
@@ -3062,7 +3066,6 @@ function initBelarusMap() {
         belZoom(e.deltaY < 0 ? 1.12 : 0.89);
     }, { passive: false });
 
-    // Touch — теперь как в Терруарах
     attachTouchGestures(belSvg, {
         getTx: () => belTx,
         getTy: () => belTy,
