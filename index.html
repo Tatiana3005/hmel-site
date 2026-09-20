@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -331,6 +332,7 @@ body {
     max-width: 1700px;
     width: 100%;
     margin: 0 auto;
+    align-items: stretch;
 }
 .main.single { grid-template-columns: 1fr; max-width: 1200px; }
 .tab-panel { display: none; }
@@ -629,20 +631,22 @@ body {
 .minimap .mini-viewport { fill: rgba(212, 165, 58, 0.25); stroke: var(--gold); stroke-width: 1.5; }
 .minimap .mini-title { position: absolute; top: 4px; left: 6px; font-size: 8px; font-weight: 800; color: var(--green-700); text-transform: uppercase; pointer-events: none; }
 
-/* ИНФО-ПАНЕЛЬ — исправлена позиция */
+/* ИНФО-ПАНЕЛЬ — растянута по высоте */
 .info-panel {
     background: var(--panel-bg);
     backdrop-filter: blur(14px);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     padding: 24px;
-    overflow-y: auto;
-    max-height: calc(100vh - 120px);
-    position: sticky;
-    top: 90px;
     color: var(--text);
     border: 1px solid rgba(255,255,255,0.6);
-    min-height: 500px;
+    position: relative;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+#panelContent, #historyPanel, #belarusPanel {
+    flex: 1;
 }
 #panelContent h2, .info-panel h2 {
     font-family: 'Unbounded', sans-serif;
@@ -684,13 +688,13 @@ body {
 .potential-bar .p-fill.medium { background: linear-gradient(90deg, #a5d6a7, var(--green-500)); }
 .potential-bar .p-fill.low { background: linear-gradient(90deg, #e8f5e9, #a5d6a7); }
 
-/* ПЕРСОНАЖ ВНУТРИ ПАНЕЛИ */
+/* ПЕРСОНАЖ ВНУТРИ ПАНЕЛИ — УВЕЛИЧЕН НА 50% */
 .panel-character {
     position: absolute;
     bottom: 16px;
     right: 16px;
-    width: 90px;
-    height: 120px;
+    width: 135px;
+    height: 180px;
     cursor: pointer;
     z-index: 5;
     transition: transform 0.3s, filter 0.3s;
@@ -698,7 +702,7 @@ body {
     pointer-events: auto;
 }
 .panel-character:hover {
-    transform: scale(1.1) translateY(-4px);
+    transform: scale(1.08) translateY(-4px);
     animation-play-state: paused;
     filter: drop-shadow(0 10px 22px rgba(76, 175, 80, 0.6));
 }
@@ -711,13 +715,13 @@ body {
 }
 .panel-character .panel-char-emoji {
     display: none;
-    font-size: 60px;
+    font-size: 90px;
     line-height: 1;
 }
 .panel-character.no-image .panel-char-emoji { display: block; }
 .panel-character.no-image img { display: none; }
 
-/* ПАНЕЛЬ ПОДСКАЗОК (комбо) */
+/* ПАНЕЛЬ ПОДСКАЗОК ПЕРСОНАЖА (ОТКРЫВАЕТСЯ ВВЕРХ) */
 .char-popup {
     position: fixed;
     z-index: 200;
@@ -727,7 +731,7 @@ body {
     box-shadow: 0 20px 60px rgba(0,0,0,0.35);
     border: 2px solid var(--gold);
     padding: 16px 18px;
-    width: 300px;
+    width: 320px;
     max-width: calc(100vw - 32px);
     opacity: 0;
     pointer-events: none;
@@ -738,6 +742,18 @@ body {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
+}
+.char-popup::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 12px solid transparent;
+    border-top-color: var(--gold);
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
 }
 .char-popup-head {
     display: flex;
@@ -810,7 +826,6 @@ body {
 .char-popup-action .ico { font-size: 16px; flex-shrink: 0; }
 .char-popup-action .arr { margin-left: auto; color: var(--gold); font-weight: 800; }
 
-/* СТАТИСТИКА */
 .map-top-actions {
     position: absolute;
     top: 18px;
@@ -1074,6 +1089,8 @@ body {
     padding: 30px 20px 40px;
     color: var(--text);
     overflow: hidden;
+    position: relative;
+    min-height: 800px;
 }
 .platform-title { font-family: 'Unbounded', sans-serif; font-size: 26px; color: var(--green-800); text-align: center; margin-bottom: 8px; }
 .platform-subtitle { text-align: center; color: var(--text-soft); font-size: 14.5px; margin-bottom: 30px; }
@@ -1438,7 +1455,7 @@ body {
 }
 @media (max-width: 900px) {
     .main { grid-template-columns: 1fr; padding: 12px; gap: 12px; }
-    .info-panel { max-height: none; position: static; padding: 20px; padding-bottom: 160px; }
+    .info-panel { max-height: none; position: static; padding: 20px; padding-bottom: 180px; min-height: auto; }
     .map-wrapper { min-height: 500px; }
     .header { padding: 12px 16px; }
     .logo h1 { font-size: 12px; }
@@ -1454,9 +1471,10 @@ body {
         top: auto; right: auto; bottom: auto; left: auto;
         transform: none;
     }
-    .panel-character { width: 70px; height: 90px; bottom: 20px; right: 20px; }
-    .panel-character .panel-char-emoji { font-size: 50px; }
+    .panel-character { width: 100px; height: 135px; bottom: 20px; right: 20px; }
+    .panel-character .panel-char-emoji { font-size: 70px; }
     .char-popup { width: 280px; }
+    .platform-wrap { min-height: auto; }
 }
 @media (max-width: 600px) {
     .logo-badge { font-size: 11px; padding: 6px 16px; }
@@ -1824,6 +1842,11 @@ body {
                         <button class="eco-card eco-card-btn" onclick="openProducerCalc()" data-info="Расчёт ресурсов для плантации хмеля">Открыть калькулятор</button>
                     </div>
                 </div>
+                <!-- ПЕРСОНАЖ на платформе -->
+                <div class="panel-character" id="platformCharacter" onclick="openCharPopup(event, 'platform')" style="position: absolute; bottom: 20px; right: 20px;">
+                    <img id="platformCharacterImg" src="hmelka.png" alt="Персонаж" onerror="this.parentElement.classList.add('no-image')">
+                    <span class="panel-char-emoji">🌸</span>
+                </div>
             </div>
         </div>
     </div>
@@ -2070,7 +2093,6 @@ body {
 <div class="toast" id="toast"></div>
 
 <script>
-/* СВЕТЛЯЧКИ */
 function createFireflies() {
     const container = document.getElementById('fireflies');
     if (!container) return;
@@ -2120,7 +2142,6 @@ function showScreen(id) {
     }
 }
 
-/* ПЕРСОНАЖ */
 let currentCharacter = null;
 
 function chooseCharacter(who) {
@@ -2135,7 +2156,7 @@ function updateAllPanelCharacters() {
     const src = currentCharacter === 'girl' ? 'hmelka.png' : 'hmelich.png';
     const emoji = currentCharacter === 'girl' ? '🌸' : '🌿';
 
-    ['historyCharacter', 'terroirCharacter', 'belarusCharacter'].forEach(id => {
+    ['historyCharacter', 'terroirCharacter', 'belarusCharacter', 'platformCharacter'].forEach(id => {
         const wrap = document.getElementById(id);
         if (!wrap) return;
         const img = wrap.querySelector('img');
@@ -2171,7 +2192,6 @@ function restoreCharacter() {
 }
 window.addEventListener('load', restoreCharacter);
 
-/* ПАНЕЛЬ ПОДСКАЗОК ПЕРСОНАЖА (КОМБО) */
 const charHints = {
     history: {
         hint: '📜 Кликни на губернию — увидишь её название и описание на карте',
@@ -2194,6 +2214,13 @@ const charHints = {
         actions: [
             { ico: '🗺️', label: 'Вся карта', action: 'belReset()' }
         ]
+    },
+    platform: {
+        hint: '🧩 Кликни на центральный круг — откроются роли. Наведи на карточки — подсветятся связи',
+        actions: [
+            { ico: '🧮', label: 'Открыть калькулятор', action: 'openProducerCalc()' },
+            { ico: '💰', label: 'Меры поддержки', action: 'openInvestorModal()' }
+        ]
     }
 };
 
@@ -2202,7 +2229,6 @@ function openCharPopup(event, tab) {
     const popup = document.getElementById('charPopup');
     if (!popup) return;
 
-    // Если уже открыт для этой же вкладки — закрываем (toggle)
     if (popup.classList.contains('visible') && popup.dataset.tab === tab) {
         closeCharPopup();
         return;
@@ -2231,22 +2257,20 @@ function openCharPopup(event, tab) {
     popup.dataset.tab = tab;
     popup.classList.add('visible');
 
-    // Позиционируем popup рядом с персонажем
     const target = event ? event.currentTarget : null;
     if (target) {
         const rect = target.getBoundingClientRect();
-        const popupWidth = 300;
-        let left = rect.left - popupWidth - 16; // слева от персонажа
-        let top = rect.top - 20;
+        const popupWidth = 320;
+        const popupHeight = 220;
 
-        // Если не влезает слева — открываем справа
-        if (left < 10) left = rect.right + 16;
-        // Ограничиваем по краям
+        let left = rect.left + rect.width / 2 - popupWidth / 2;
+        let top = rect.top - popupHeight - 20;
+
+        if (left < 10) left = 10;
         if (left + popupWidth > window.innerWidth - 10) {
             left = window.innerWidth - popupWidth - 10;
         }
-        if (top < 10) top = 10;
-        if (top + 200 > window.innerHeight) top = window.innerHeight - 220;
+        if (top < 10) top = rect.bottom + 20;
 
         popup.style.left = left + 'px';
         popup.style.top = top + 'px';
@@ -2258,7 +2282,6 @@ function closeCharPopup() {
     if (popup) popup.classList.remove('visible');
 }
 
-/* Клик вне popup — закрыть */
 document.addEventListener('click', (e) => {
     const popup = document.getElementById('charPopup');
     if (!popup || !popup.classList.contains('visible')) return;
@@ -2267,7 +2290,6 @@ document.addEventListener('click', (e) => {
     }
 });
 
-/* Esc — закрыть popup */
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         closeCharPopup();
@@ -2275,7 +2297,6 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-/* НАВИГАЦИЯ */
 document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const tab = btn.dataset.tab;
@@ -2308,7 +2329,6 @@ function toggleHistory() {
 const yearEl = document.getElementById('currentYear');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-/* ДАННЫЕ */
 const historicRegions = [
     { name: "Свердловская губерния",   short: "Свердловская\nгуберния",  points: "300,200 355,190 375,235 340,255 300,235", labelX: 0, labelY: 0 },
     { name: "Костромская губерния",    short: "Костромская\nгуберния",   points: "235,225 275,215 290,250 260,270 230,250", labelX: 5, labelY: 0 },
@@ -2325,13 +2345,13 @@ const historicRegions = [
 const regionsData = {
     "Республика Чувашия": { potential: "high", hops: "1 250 т/год", farms: 34, area: "2 100 га", growth: "+18%", description: "Ведущий регион-производитель хмеля в России." },
     "Республика Марий Эл": { potential: "high", hops: "780 т/год", farms: 21, area: "1 400 га", growth: "+12%", description: "Второй по значимости регион хмелеводства." },
-    "Алтайский край": { potential: "medium", hops: "410 т/год", farms: 15, area: "860 га", growth: "+9%", description: "Перспективный регион с растущим потенциалом." },
+    "Алтайский край": { potential: "medium", hops: "410 т/год", farms: 15, area: "860 га", growth: "+9%", description: "Перспективный регион." },
     "Брянская область": { potential: "medium", hops: "240 т/год", farms: 9, area: "520 га", growth: "+7%", description: "Регион с благоприятными условиями." },
-    "Московская область": { potential: "low", hops: "95 т/год", farms: 6, area: "180 га", growth: "+3%", description: "Преимущественно переработка и логистика." },
+    "Московская область": { potential: "low", hops: "95 т/год", farms: 6, area: "180 га", growth: "+3%", description: "Преимущественно переработка." },
     "Пензенская область": { potential: "medium", hops: "180 т/год", farms: 8, area: "380 га", growth: "+6%", description: "Развивающийся регион." },
-    "Республика Алтай": { potential: "low", hops: "60 т/год", farms: 4, area: "120 га", growth: "+2%", description: "Небольшие объёмы производства." },
+    "Республика Алтай": { potential: "low", hops: "60 т/год", farms: 4, area: "120 га", growth: "+2%", description: "Небольшие объёмы." },
     "Кировская область": { potential: "medium", hops: "210 т/год", farms: 11, area: "440 га", growth: "+8%", description: "Перспективный регион." },
-    "Воронежская область": { potential: "low", hops: "75 т/год", farms: 5, area: "140 га", growth: "+4%", description: "Регион с умеренным потенциалом." },
+    "Воронежская область": { potential: "low", hops: "75 т/год", farms: 5, area: "140 га", growth: "+4%", description: "Умеренный потенциал." },
     "Курская область": { potential: "medium", hops: "160 т/год", farms: 7, area: "340 га", growth: "+5%", description: "Развивающийся регион." }
 };
 
@@ -2399,7 +2419,6 @@ function hideTooltipGeneric(tooltipId) {
     if (tooltip) tooltip.classList.remove('visible');
 }
 
-/* КАРТА ИСТОРИИ */
 let histInitialized = false;
 let histSvg, histG, histScale = 1, histTx = 0, histTy = 0;
 
@@ -2487,7 +2506,6 @@ function histSelectRegion(name) {
     showToast('📍 ' + name);
 }
 
-/* КАРТА ТЕРРУАРОВ */
 let terInitialized = false;
 let terSvg, terG, terLinksG, terRegionsG, terMarkersG, terRouteG;
 let terScale = 1, terTx = 0, terTy = 0;
@@ -2777,7 +2795,6 @@ function toggleStatsPanel() {
     if (b) b.classList.toggle('active');
 }
 
-/* КАРТА БЕЛАРУСИ */
 const belarusData = {
     "Гомельская область": { potential: "high", hops: "320 т/год", farms: 12, area: "540 га", growth: "+10%", description: "Ведущий регион хмелеводства Беларуси. Мягкий климат, плодородные почвы." },
     "Брестская область": { potential: "medium", hops: "180 т/год", farms: 8, area: "320 га", growth: "+6%", description: "Второй по значимости регион Беларуси." }
@@ -2913,12 +2930,11 @@ function belSelectRegion(name) {
     showToast('📍 ' + name);
 }
 
-/* ПРОИЗВОДСТВО */
 const rawData = [
     { emoji: "🌿", title: "Сбор шишек", intro: "Сбор урожая хмеля проводят в конце августа — сентябре.", recipe: "Определяют по цвету лупулина, плотности шишек и аромату.", proportions: "Оптимальный срок — 10–14 дней с момента созревания.", role: "Собранные шишки сразу отправляют на сушку — не более 24 часов.", fact: "Задержка с сушкой на 1 день теряет до 15% альфа-кислот." },
     { emoji: "🍂", title: "Сушка", intro: "Свежие шишки содержат 70–80% влаги и быстро портятся.", recipe: "Сушка в специальных сушилках 6–8 часов. Влажность до 10–12%.", proportions: "Режим: 55–60°C первые 2 часа, затем 60–65°C.", role: "От качества сушки зависит сохранность альфа-кислот.", fact: "Пересушивание ломает шишки, недосушка — вызывает плесень." },
-    { emoji: "📦", title: "Прессование", intro: "Высушенные шишки прессуют в брикеты или тюки.", recipe: "Плотность 250–350 кг/м³. Гидравлические прессы.", proportions: "Стандартная упаковка — 50–100 кг.", role: "Уменьшает объём в 4–5 раз.", fact: "Правильно спрессованный хмель хранится до 2 лет." },
-    { emoji: "❄️", title: "Хранение", intro: "Хмель хранят при низкой температуре и в вакууме.", recipe: "Температура 0…+2°C, влажность 60–65%, в темноте.", proportions: "Вакуумная упаковка продлевает срок до 3–5 лет.", role: "При комнатной температуре хмель теряет горечь за 3–6 месяцев.", fact: "Каждые +10°C ускоряют окисление альфа-кислот в 2–3 раза." },
+    { emoji: "📦", title: "Прессование", intro: "Высушенные шишки прессуют в брикеты или тюки.", recipe: "Плотность 250–350 кг/м³.", proportions: "Стандартная упаковка — 50–100 кг.", role: "Уменьшает объём в 4–5 раз.", fact: "Правильно спрессованный хмель хранится до 2 лет." },
+    { emoji: "❄️", title: "Хранение", intro: "Хмель хранят при низкой температуре и в вакууме.", recipe: "Температура 0…+2°C, влажность 60–65%.", proportions: "Вакуум продлевает срок до 3–5 лет.", role: "При комнатной температуре хмель теряет горечь за 3–6 месяцев.", fact: "Каждые +10°C ускоряют окисление альфа-кислот в 2–3 раза." },
     { emoji: "🌡", title: "Контроль качества", intro: "Определяют влажность, содержание альфа-кислот, эфирных масел.", recipe: "Лабораторный анализ партии по ГОСТ.", proportions: "Стандарт: α-кислоты 3–14%.", role: "От качества сырья зависит характер будущего пива.", fact: "В мире более 250 сортов хмеля." }
 ];
 
