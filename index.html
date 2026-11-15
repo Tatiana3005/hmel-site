@@ -1655,6 +1655,7 @@ function initTerroirsMap() {
             }
         };
     });
+    setTimeout(() => { if (terG) terG.querySelectorAll('.region-group').forEach(g => g.classList.remove('selected')); }, 50);
 }
 
 function updateTerTransform() {
