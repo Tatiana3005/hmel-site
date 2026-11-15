@@ -1630,6 +1630,7 @@ function initTerroirsMap() {
     drawHistoricCapital();
     
     // Логика фильтра
+    if (terG) terG.querySelectorAll('.region-group').forEach(g => g.classList.remove('selected'));
     document.querySelectorAll('#terroirLegend .legend-item[data-filter]').forEach(item => {
         item.onclick = function() {
             const filter = this.dataset.filter;
