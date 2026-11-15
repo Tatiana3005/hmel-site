@@ -90,8 +90,9 @@ body { font-family: 'Manrope', system-ui, -apple-system, sans-serif; color: #fff
 #belarusMap .region.high { fill: url(#gradBelHigh); }
 #belarusMap .region.medium { fill: url(#gradBelMedium); }
 #belarusMap .region.low { fill: url(#gradBelMedium); }
-.region.selected { stroke: var(--green-500); stroke-width: 3.5; stroke-linejoin: round; stroke-linecap: round; filter: brightness(1.2) drop-shadow(0 6px 20px rgba(76,175,80,0.8)); }
-.region.dimmed { opacity: 0.18; pointer-events: none; }
+.region-group.selected .region { stroke: var(--gold); stroke-width: 4; animation: pulseSelected 1.5s infinite; }
+@keyframes pulseSelected { 0% { filter: brightness(1.2) drop-shadow(0 0 10px var(--gold)); } 50% { filter: brightness(1.5) drop-shadow(0 0 25px var(--gold)); } 100% { filter: brightness(1.2) drop-shadow(0 0 10px var(--gold)); } }
+.region-group.dimmed { opacity: 0.18; pointer-events: none; }
 .region.historic { fill: url(#gradHistoric); }
 .region.historic:hover { stroke: var(--gold); stroke-width: 2.5; }
 .region-label { font-family: 'Manrope', sans-serif; font-size: 10.5px; font-weight: 800; fill: #ffffff; text-anchor: middle; pointer-events: none !important; paint-order: stroke; stroke: rgba(13, 43, 26, 0.9); stroke-width: 3px; stroke-linejoin: round; }
@@ -1539,6 +1540,11 @@ function initTerroirsMap() {
         const coords = region.points.split(" ").map(p => p.split(",").map(Number));
         const cx = coords.reduce((s, p) => s + p[0], 0) / coords.length;
         const cy = coords.reduce((s, p) => s + p[1], 0) / coords.length;
+
+        const regionGroup = document.createElementNS(NS, "g");
+        regionGroup.dataset.name = region.name;
+        regionGroup.setAttribute("class", "region-group");
+
         const poly = document.createElementNS(NS, "polygon");
         poly.setAttribute("points", region.points);
         poly.setAttribute("class", "region " + data.potential);
@@ -1548,7 +1554,8 @@ function initTerroirsMap() {
         poly.addEventListener("mouseenter", (e) => showTooltipGeneric(terSvg, "terroirTooltip", e, region.name, (n) => regionsData[n]));
         poly.addEventListener("mousemove", (e) => moveTooltipGeneric(terSvg, "terroirTooltip", e));
         poly.addEventListener("mouseleave", () => hideTooltipGeneric("terroirTooltip"));
-        terG.appendChild(poly);
+        regionGroup.appendChild(poly);
+
         const lines = region.short.split("\n");
         const label = document.createElementNS(NS, "text");
         label.setAttribute("x", cx + (region.labelX || 0));
@@ -1561,17 +1568,23 @@ function initTerroirsMap() {
             tspan.textContent = line;
             label.appendChild(tspan);
         });
-        terG.appendChild(label);
+        regionGroup.appendChild(label);
+
         const marker = document.createElementNS(NS, "g");
         marker.setAttribute("class", "region-marker");
         const mCircle = document.createElementNS(NS, "circle");
-        mCircle.setAttribute("cx", cx); mCircle.setAttribute("cy", cy + (region.iconDY || 0)); mCircle.setAttribute("r", 10);
+        mCircle.setAttribute("cx", cx); 
+        mCircle.setAttribute("cy", cy + (region.iconDY || 0)); 
+        mCircle.setAttribute("r", 10);
         const mText = document.createElementNS(NS, "text");
-        mText.setAttribute("x", cx); mText.setAttribute("y", cy + (region.iconDY || 0));
+        mText.setAttribute("x", cx); 
+        mText.setAttribute("y", cy + (region.iconDY || 0));
         mText.textContent = potentialIcons[data.potential];
         marker.appendChild(mCircle);
         marker.appendChild(mText);
-        terG.appendChild(marker);
+        regionGroup.appendChild(marker);
+
+        terG.appendChild(regionGroup);
     });
 
     regionLinks.forEach(([a, b]) => {
@@ -1616,7 +1629,7 @@ function initTerroirsMap() {
     updateLegendCounts();
     drawHistoricCapital();
     
-    // Привязка кликов к легенде
+    // Логика фильтра
     document.querySelectorAll('.legend-item[data-filter]').forEach(item => {
         item.onclick = function() {
             const filter = this.dataset.filter;
@@ -1628,14 +1641,14 @@ function initTerroirsMap() {
                 this.classList.add('active');
                 document.getElementById('terroirLegend').classList.add('filtered');
                 
-                terG.querySelectorAll('.region').forEach(poly => {
-                    poly.classList.remove('selected');
-                    const name = poly.dataset.name;
+                terG.querySelectorAll('.region-group').forEach(group => {
+                    group.classList.remove('selected'); // Снимаем выделение при фильтрации
+                    const name = group.dataset.name;
                     const data = regionsData[name];
                     if (data && data.potential !== filter) {
-                        poly.classList.add('dimmed');
+                        group.classList.add('dimmed');
                     } else {
-                        poly.classList.remove('dimmed');
+                        group.classList.remove('dimmed');
                     }
                 });
             }
@@ -1647,14 +1660,16 @@ function updateTerTransform() {
     if (terG) terG.setAttribute('transform', `translate(${terTx},${terTy}) scale(${terScale})`);
 }
 function terSelectRegion(name) {
-    resetTerroirFilter();
-    const polys = terG.querySelectorAll('.region');
-    polys.forEach(p => p.classList.remove('selected'));
-    const target = [...polys].find(p => p.dataset.name === name);
-    if (target) {
-        target.classList.add('selected');
-        target.parentNode.appendChild(target);
+    resetTerroirFilter(); // Сбрасываем фильтр, чтобы было видно выделение
+    const groups = terG.querySelectorAll('.region-group');
+    groups.forEach(g => g.classList.remove('selected'));
+    
+    const targetGroup = [...groups].find(g => g.dataset.name === name);
+    if (targetGroup) {
+        targetGroup.classList.add('selected');
+        terG.appendChild(targetGroup); // Поднимаем наверх
     }
+    
     const data = regionsData[name] || {};
     const panel = document.getElementById('panelContent');
     if (panel) {
@@ -1679,8 +1694,8 @@ function terZoom(factor) {
 function terReset() {
     terScale = 1; terTx = 0; terTy = 0;
     updateTerTransform();
-    const polys = terG.querySelectorAll('.region');
-    polys.forEach(p => p.classList.remove('selected'));
+    const groups = terG.querySelectorAll('.region-group');
+    groups.forEach(g => g.classList.remove('selected'));
     resetTerroirFilter();
 }
 function terRandom() {
@@ -1755,6 +1770,11 @@ function initBelarusMap() {
         const coords = region.points.split(" ").map(p => p.split(",").map(Number));
         const cx = coords.reduce((s, p) => s + p[0], 0) / coords.length;
         const cy = coords.reduce((s, p) => s + p[1], 0) / coords.length;
+
+        const regionGroup = document.createElementNS(NS, "g");
+        regionGroup.dataset.name = region.name;
+        regionGroup.setAttribute("class", "region-group");
+
         const poly = document.createElementNS(NS, "polygon");
         poly.setAttribute("points", region.points);
         poly.setAttribute("class", "region " + data.potential);
@@ -1764,7 +1784,8 @@ function initBelarusMap() {
         poly.addEventListener("mouseenter", (e) => showTooltipGeneric(belSvg, "belarusTooltip", e, region.name, (n) => belarusData[n]));
         poly.addEventListener("mousemove", (e) => moveTooltipGeneric(belSvg, "belarusTooltip", e));
         poly.addEventListener("mouseleave", () => hideTooltipGeneric("belarusTooltip"));
-        belG.appendChild(poly);
+        regionGroup.appendChild(poly);
+
         const lines = region.short.split("\n");
         const label = document.createElementNS(NS, "text");
         label.setAttribute("x", cx + (region.labelX || 0));
@@ -1777,7 +1798,9 @@ function initBelarusMap() {
             tspan.textContent = line;
             label.appendChild(tspan);
         });
-        belG.appendChild(label);
+        regionGroup.appendChild(label);
+
+        belG.appendChild(regionGroup);
     });
 
     let isPanning = false, startX, startY;
@@ -1811,10 +1834,15 @@ function updateBelTransform() {
     if (belG) belG.setAttribute('transform', `translate(${belTx},${belTy}) scale(${belScale})`);
 }
 function belSelectRegion(name) {
-    const polys = belG.querySelectorAll('.region');
-    polys.forEach(p => p.classList.remove('selected'));
-    const target = [...polys].find(p => p.dataset.name === name);
-    if (target) target.classList.add('selected');
+    const groups = belG.querySelectorAll('.region-group');
+    groups.forEach(g => g.classList.remove('selected'));
+    
+    const targetGroup = [...groups].find(g => g.dataset.name === name);
+    if (targetGroup) {
+        targetGroup.classList.add('selected');
+        belG.appendChild(targetGroup); // Поднимаем наверх
+    }
+    
     const data = belarusData[name] || {};
     const panel = document.getElementById('belarusPanel');
     if (panel) {
@@ -1836,8 +1864,8 @@ function belZoom(factor) {
 function belReset() {
     belScale = 1; belTx = 0; belTy = 0;
     updateBelTransform();
-    const polys = belG.querySelectorAll('.region');
-    polys.forEach(p => p.classList.remove('selected'));
+    const groups = belG.querySelectorAll('.region-group');
+    groups.forEach(g => g.classList.remove('selected'));
 }
 
 /* ============================================
@@ -1879,8 +1907,8 @@ function resetTerroirFilter() {
     const legend = document.getElementById('terroirLegend');
     if (legend) legend.classList.remove('filtered');
     if (terG) {
-        terG.querySelectorAll('.region').forEach(poly => {
-            poly.classList.remove('dimmed');
+        terG.querySelectorAll('.region-group').forEach(group => {
+            group.classList.remove('dimmed');
         });
     }
 }
