@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700;900&display=swap" rel="stylesheet">
+
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -716,8 +717,8 @@ body { font-family: 'Manrope', system-ui, -apple-system, sans-serif; color: #fff
                     </div>
                     <div class="eco-group g-agro pos-top-2" data-group="agro">
                         <div class="eco-group-title">🌱 Платформы агропрофориентации</div>
-                        <a class="eco-card" href="https://mpcenter.ru" target="_blank" rel="noopener" data-info="Точка роста — центр профессиональной ориентации">Точка роста</a>
-                        <div class="eco-card" data-info="Агрокласс — образовательная программа для школьников">Агрокласс</div>
+                        <a class="eco-card" href="https://esvoe.ru/?vsclid=mwh2h46rhn389023404" target="_blank" rel="noopener" data-info="Точка роста — центр профессиональной ориентации">Точка роста</a>
+                        <a class="eco-card" href="https://domodbarsch.edumsko.ru/" target="_blank" rel="noopener" data-info="Агрокласс — образовательная программа для школьников">Агрокласс</a>
                     </div>
                     <div class="eco-group g-finance pos-left" data-group="finance">
                         <div class="eco-group-title">💰 Финансовый сектор</div>
@@ -733,7 +734,7 @@ body { font-family: 'Manrope', system-ui, -apple-system, sans-serif; color: #fff
                         <div class="eco-group-title">🤝 Поддерживающие партнёры</div>
                         <a class="eco-card" href="https://svoefermerstvo.ru" target="_blank" rel="noopener" data-info="Платформа «Своё фермерство» — цифровые сервисы для АПК">Платформа «Своё фермерство»</a>
                         <a class="eco-card" href="https://tppchr.ru" target="_blank" rel="noopener" data-info="Торгово-промышленная палата Чувашской Республики">ТПП Чувашской Республики</a>
-                        <div class="eco-card" data-info="КФХ «ЮРКО» — крестьянско-фермерское хозяйство">КФХ «ЮРКО»</div>
+                        <a class="eco-card" href="https://roplant.ru/" target="_blank" rel="noopener" data-info="Рождествено — крестьянско-фермерское хозяйство">Рождествено</a>
                     </div>
                     <div class="eco-group g-int pos-right" data-group="int">
                         <div class="eco-group-title">🌍 Международное сотрудничество</div>
@@ -1155,6 +1156,210 @@ function restoreCharacter() {
     } catch (e) {}
 }
 window.addEventListener('load', restoreCharacter);
+
+/* ============================================
+   ПАНЕЛЬ ПОДСКАЗОК
+   ============================================ */
+const charHints = {
+    history: {
+        hint: '📜 Кликни на губернию — увидишь её название и описание на карте',
+        actions: [
+            { ico: '📖', label: 'Развернуть текст', action: 'toggleHistory()' },
+            { ico: '🎲', label: 'Случайная губерния', action: 'histRandom()' },
+            { ico: '🗺️', label: 'Вся карта', action: 'histReset()' }
+        ]
+    },
+    terroirs: {
+        hint: '🗺 Наведи на регион — появится справка. Кликни — подробности справа',
+        actions: [
+            { ico: '🎲', label: 'Случайный регион', action: 'terRandom()' },
+            { ico: '📊', label: 'Статистика', action: 'toggleStatsPanel()' },
+            { ico: '🔗', label: 'Связи', action: 'terToggleRoutes()' }
+        ]
+    },
+    belarus: {
+        hint: '🇧🇾 Кликни на область — увидишь подробности в панели справа',
+        actions: [
+            { ico: '🗺️', label: 'Вся карта', action: 'belReset()' }
+        ]
+    },
+    platform: {
+        hint: '🧩 Наведи на блоки — узнаешь их роль. Кликни в центр — откроется платформа.',
+        actions: [
+            { ico: '🌾', label: 'Калькулятор', action: 'openProducerCalc()' },
+            { ico: '📊', label: 'Статистика', action: 'showToast("Статистика доступна во вкладке Терруары")' }
+        ]
+    }
+};
+
+function openCharPopup(event, section) {
+    event.stopPropagation();
+    const popup = document.getElementById('charPopup');
+    if (!popup) return;
+    const hintEl = document.getElementById('charPopupHint');
+    const actionsEl = document.getElementById('charPopupActions');
+    const data = charHints[section] || { hint: '💡 Выбери раздел!', actions: [] };
+    
+    hintEl.textContent = data.hint;
+    actionsEl.innerHTML = '';
+    
+    data.actions.forEach(act => {
+        const btn = document.createElement('button');
+        btn.className = 'char-popup-action';
+        btn.innerHTML = `<span class="ico">${act.ico}</span> <span>${act.label}</span> <span class="arr">→</span>`;
+        btn.onclick = () => {
+            eval(act.action);
+            closeCharPopup();
+        };
+        actionsEl.appendChild(btn);
+    });
+    
+    let rect = event.target.getBoundingClientRect();
+    if (rect.width === 0 && event.target.parentElement) {
+        rect = event.target.parentElement.getBoundingClientRect();
+    }
+    let left = rect.left + rect.width / 2 - 160;
+    let top = rect.top - 20;
+    if (left < 10) left = 10;
+    if (left + 320 > window.innerWidth - 10) left = window.innerWidth - 330;
+    if (top < 10) top = 10;
+    
+    popup.style.left = left + 'px';
+    popup.style.top = (top - popup.offsetHeight) + 'px';
+    popup.classList.add('visible');
+    
+    setTimeout(() => {
+        popup.style.top = (rect.top - popup.offsetHeight - 15) + 'px';
+    }, 10);
+}
+
+function closeCharPopup() {
+    const popup = document.getElementById('charPopup');
+    if (popup) popup.classList.remove('visible');
+}
+
+document.addEventListener('click', (e) => {
+    const popup = document.getElementById('charPopup');
+    if (popup && popup.classList.contains('visible') && !popup.contains(e.target) && !e.target.closest('.panel-character')) {
+        closeCharPopup();
+    }
+});
+
+/* ============================================
+   ОБЩИЕ ФУНКЦИИ МОДАЛОК
+   ============================================ */
+function openPlatformModal() { document.getElementById('platformModal').classList.add('visible'); }
+function openInvestorModal() { document.getElementById('investorModal').classList.add('visible'); }
+function openScienceModal() { document.getElementById('scienceModal').classList.add('visible'); }
+function closeModal(id) { document.getElementById(id).classList.remove('visible'); }
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeModal(overlay.id);
+    });
+});
+
+function toggleHistory() {
+    const block = document.getElementById('historyBlock');
+    if (!block) return;
+    block.classList.toggle('collapsed');
+    const btnText = block.querySelector('.expand-label');
+    if (btnText) {
+        btnText.textContent = block.classList.contains('collapsed') ? 'Читать полностью' : 'Свернуть';
+    }
+}
+
+/* ============================================
+   КАЛЬКУЛЯТОР
+   ============================================ */
+function openProducerCalc() {
+    closeModal('platformModal');
+    document.getElementById('calcModal').classList.add('visible');
+}
+
+document.querySelectorAll('.calc-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.calc-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.calc-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelector(`.calc-panel[data-calc-panel="${tab.dataset.calcTab}"]`).classList.add('active');
+    });
+});
+
+function runCalculator() {
+    const area = parseFloat(document.getElementById('cArea').value) || 0;
+    const scheme = document.getElementById('cScheme').value;
+    const yieldVal = parseFloat(document.getElementById('cYield').value) || 0;
+    
+    const [rowSp, bushSp] = scheme.split('x').map(Number);
+    const bushesPerHa = Math.floor(10000 / (rowSp * bushSp));
+    const totalBushes = Math.floor(bushesPerHa * area);
+    const expectedYield = (yieldVal * area);
+    
+    const polesTotal = Math.ceil(area * 25);
+    const anchors = Math.ceil(area * 4);
+    const wire5m = Math.ceil((area * 400) / 5);
+    const wire8m = Math.ceil((area * 400) / 8);
+    const wire65m = Math.ceil((area * 400) / 6.5);
+    const jbTotal = Math.ceil(area * 12);
+    const feedArea = area * 10000;
+
+    const N = Math.floor(120 * area);
+    const P = Math.floor(90 * area);
+    const K = Math.floor(150 * area);
+    const manureMin = Math.floor(30 * area);
+    const manureMax = Math.floor(50 * area);
+
+    const seasonMin = Math.floor(1500 * area);
+    const seasonMax = Math.floor(2500 * area);
+    const singleMin = Math.floor(60 * area);
+    const singleMax = Math.floor(100 * area);
+    const irCount = Math.ceil(area * 8);
+
+    const fmt = (n) => n.toLocaleString('ru-RU');
+
+    const result = document.getElementById('calcResult');
+    result.innerHTML = `
+        <h4>📋 Результаты расчёта</h4>
+        <div class="result-grid">
+            <div class="res-sub">🌱 Посадка</div>
+            <div class="res-row"><span class="rl">📐 Схема</span><span class="rv">${scheme.replace('x', ' × ')} м</span></div>
+            <div class="res-row"><span class="rl">🌍 Площадь питания</span><span class="rv">${feedArea.toFixed(2)} м²</span></div>
+            <div class="res-row highlight-row"><span class="rl">🌱 Кустов на 1 га</span><span class="rv">${fmt(bushesPerHa)} шт.</span></div>
+            <div class="res-row highlight-row"><span class="rl">🌿 Всего кустов</span><span class="rv">${fmt(totalBushes)} шт.</span></div>
+            <div class="res-row"><span class="rl">⚖️ Ожидаемый сбор</span><span class="rv">${expectedYield.toFixed(2)} т</span></div>
+            
+            <div class="res-sub">🏗️ Шпалера</div>
+            <div class="res-row"><span class="rl">🪵 Всего столбов</span><span class="rv">${fmt(polesTotal)} шт.</span></div>
+            <div class="res-row"><span class="rl">🔗 Проволока 5 мм</span><span class="rv">${fmt(wire5m)} м</span></div>
+            <div class="res-row"><span class="rl">🔗 Проволока 8 мм</span><span class="rv">${fmt(wire8m)} м</span></div>
+            <div class="res-row"><span class="rl">🔗 Проволока 6,5 мм</span><span class="rv">${fmt(wire65m)} м</span></div>
+            <div class="res-row"><span class="rl">🪢 Всего Ж/Б</span><span class="rv">${fmt(jbTotal)} шт.</span></div>
+            <div class="res-row"><span class="rl">⚓ Якоря</span><span class="rv">${fmt(anchors)} шт.</span></div>
+            
+            <div class="res-sub">💧 Удобрения</div>
+            <div class="res-row"><span class="rl">🧪 Азот (N)</span><span class="rv">${fmt(N)} кг/га</span></div>
+            <div class="res-row"><span class="rl">🧪 Фосфор (P₂O₅)</span><span class="rv">${fmt(P)} кг/га</span></div>
+            <div class="res-row"><span class="rl">🧪 Калий (K₂O)</span><span class="rv">${fmt(K)} кг/га</span></div>
+            <div class="res-row"><span class="rl">💩 Навоз</span><span class="rv">${fmt(manureMin)}–${fmt(manureMax)} т/га</span></div>
+            
+            <div class="res-sub">🚿 Орошение</div>
+            <div class="res-row"><span class="rl">💧 Сезонная норма</span><span class="rv">${fmt(seasonMin)}–${fmt(seasonMax)} м³/га</span></div>
+            <div class="res-row"><span class="rl">🔢 Поливов</span><span class="rv">${fmt(irCount)}</span></div>
+            <div class="res-row"><span class="rl">📏 Норма полива</span><span class="rv">${fmt(singleMin)}–${fmt(singleMax)} м³/га</span></div>
+        </div>
+    `;
+    result.classList.add('visible');
+    result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    showToast('✅ Расчёт готов!');
+}
+
+document.querySelectorAll('#calcModal input, #calcModal select').forEach(el => {
+    el.addEventListener('change', () => {
+        const r = document.getElementById('calcResult');
+        if (r && r.classList.contains('visible')) runCalculator();
+    });
+});
 </script>
 </body>
 </html>
