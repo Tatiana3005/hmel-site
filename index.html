@@ -784,10 +784,10 @@ body { font-family: 'Manrope', system-ui, -apple-system, sans-serif; color: #fff
                             </defs>
                         </svg>
                         <div class="map-tooltip" id="belarusTooltip"></div>
-                        <div class="legend">
-                            <h3>Области Беларуси</h3>
-                            <div class="legend-item" style="cursor:default;"><span class="dot high"></span> Высокий потенциал</div>
-                            <div class="legend-item" style="cursor:default;"><span class="dot medium"></span> Средний потенциал</div>
+                        <div class="legend" id="belarusLegend">
+                            <h3>Потенциал <button class="reset-filter" onclick="resetBelarusFilter()">Сбросить ✕</button></h3>
+                            <div class="legend-item" data-filter="high"><span class="dot high"></span> Высокий <span class="count" id="b-count-high">0</span></div>
+                            <div class="legend-item" data-filter="medium"><span class="dot medium"></span> Средний <span class="count" id="b-count-medium">0</span></div>
                         </div>
                         <div class="compass"><div class="compass-needle"></div></div>
                         <div class="zoom-controls">
@@ -1630,19 +1630,19 @@ function initTerroirsMap() {
     drawHistoricCapital();
     
     // Логика фильтра
-    document.querySelectorAll('.legend-item[data-filter]').forEach(item => {
+    document.querySelectorAll('#terroirLegend .legend-item[data-filter]').forEach(item => {
         item.onclick = function() {
             const filter = this.dataset.filter;
             if (currentTerroirFilter === filter) {
                 resetTerroirFilter();
             } else {
                 currentTerroirFilter = filter;
-                document.querySelectorAll('.legend-item[data-filter]').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('#terroirLegend .legend-item[data-filter]').forEach(i => i.classList.remove('active'));
                 this.classList.add('active');
                 document.getElementById('terroirLegend').classList.add('filtered');
                 
                 terG.querySelectorAll('.region-group').forEach(group => {
-                    group.classList.remove('selected'); // Снимаем выделение при фильтрации
+                    group.classList.remove('selected');
                     const name = group.dataset.name;
                     const data = regionsData[name];
                     if (data && data.potential !== filter) {
@@ -1660,14 +1660,14 @@ function updateTerTransform() {
     if (terG) terG.setAttribute('transform', `translate(${terTx},${terTy}) scale(${terScale})`);
 }
 function terSelectRegion(name) {
-    resetTerroirFilter(); // Сбрасываем фильтр, чтобы было видно выделение
+    resetTerroirFilter();
     const groups = terG.querySelectorAll('.region-group');
     groups.forEach(g => g.classList.remove('selected'));
     
     const targetGroup = [...groups].find(g => g.dataset.name === name);
     if (targetGroup) {
         targetGroup.classList.add('selected');
-        terG.appendChild(targetGroup); // Поднимаем наверх
+        terG.appendChild(targetGroup);
     }
     
     const data = regionsData[name] || {};
@@ -1727,6 +1727,7 @@ function drawHistoricCapital() {
    ============================================ */
 let belInitialized = false;
 let belSvg, belG, belScale = 1, belTx = 0, belTy = 0;
+let currentBelarusFilter = null;
 
 const belarusRegions = [
     { name: "Брестская область", short: "Брестская\nобласть", points: "100,150 145,140 160,175 130,190 95,175", labelX: 5, labelY: 2 },
@@ -1829,18 +1830,45 @@ function initBelarusMap() {
         setScale: (v) => belScale = v,
         update: () => updateBelTransform()
     });
+
+    // Логика фильтра для Беларуси
+    document.querySelectorAll('#belarusLegend .legend-item[data-filter]').forEach(item => {
+        item.onclick = function() {
+            const filter = this.dataset.filter;
+            if (currentBelarusFilter === filter) {
+                resetBelarusFilter();
+            } else {
+                currentBelarusFilter = filter;
+                document.querySelectorAll('#belarusLegend .legend-item[data-filter]').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('belarusLegend').classList.add('filtered');
+                
+                belG.querySelectorAll('.region-group').forEach(group => {
+                    group.classList.remove('selected');
+                    const name = group.dataset.name;
+                    const data = belarusData[name];
+                    if (data && data.potential !== filter) {
+                        group.classList.add('dimmed');
+                    } else {
+                        group.classList.remove('dimmed');
+                    }
+                });
+            }
+        };
+    });
 }
 function updateBelTransform() {
     if (belG) belG.setAttribute('transform', `translate(${belTx},${belTy}) scale(${belScale})`);
 }
 function belSelectRegion(name) {
+    resetBelarusFilter();
     const groups = belG.querySelectorAll('.region-group');
     groups.forEach(g => g.classList.remove('selected'));
     
     const targetGroup = [...groups].find(g => g.dataset.name === name);
     if (targetGroup) {
         targetGroup.classList.add('selected');
-        belG.appendChild(targetGroup); // Поднимаем наверх
+        belG.appendChild(targetGroup);
     }
     
     const data = belarusData[name] || {};
@@ -1866,6 +1894,7 @@ function belReset() {
     updateBelTransform();
     const groups = belG.querySelectorAll('.region-group');
     groups.forEach(g => g.classList.remove('selected'));
+    resetBelarusFilter();
 }
 
 /* ============================================
@@ -1899,15 +1928,37 @@ function updateLegendCounts() {
     if (elH) elH.textContent = counts.high;
     if (elM) elM.textContent = counts.medium;
     if (elL) elL.textContent = counts.low;
+    
+    const countsB = { high: 0, medium: 0 };
+    belarusRegions.forEach(r => {
+        const data = belarusData[r.name];
+        if (data && countsB[data.potential] !== undefined) countsB[data.potential]++;
+    });
+    const elBH = document.getElementById('b-count-high');
+    const elBM = document.getElementById('b-count-medium');
+    if (elBH) elBH.textContent = countsB.high;
+    if (elBM) elBM.textContent = countsB.medium;
 }
 
 function resetTerroirFilter() {
     currentTerroirFilter = null;
-    document.querySelectorAll('.legend-item[data-filter]').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('#terroirLegend .legend-item[data-filter]').forEach(i => i.classList.remove('active'));
     const legend = document.getElementById('terroirLegend');
     if (legend) legend.classList.remove('filtered');
     if (terG) {
         terG.querySelectorAll('.region-group').forEach(group => {
+            group.classList.remove('dimmed');
+        });
+    }
+}
+
+function resetBelarusFilter() {
+    currentBelarusFilter = null;
+    document.querySelectorAll('#belarusLegend .legend-item[data-filter]').forEach(i => i.classList.remove('active'));
+    const legend = document.getElementById('belarusLegend');
+    if (legend) legend.classList.remove('filtered');
+    if (belG) {
+        belG.querySelectorAll('.region-group').forEach(group => {
             group.classList.remove('dimmed');
         });
     }
