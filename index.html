@@ -1084,6 +1084,7 @@ function showScreen(id) {
     if (el) el.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     closeCharPopup();
+    
     if (id === 'screen-map') {
         setTimeout(() => {
             initHistoryMap();
@@ -1093,10 +1094,15 @@ function showScreen(id) {
             renderProducts();
             renderTeam();
             drawEcoLines();
+            
+            // Принудительно снимаем выделение со всех регионов через 200 мс
+            setTimeout(() => {
+                document.querySelectorAll('.region-group').forEach(g => {
+                    g.classList.remove('selected');
+                });
+            }, 200);
         }, 60);
     }
-}
-
 /* ============================================
    ПЕРСОНАЖ
    ============================================ */
