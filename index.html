@@ -1494,8 +1494,10 @@ function histReset() {
     polys.forEach(p => p.classList.remove('selected'));
     const panel = document.getElementById('historyPanel');
     if (panel) panel.innerHTML = `
-        <h2>📜 История хмелепроизводства</h2>
-        <p>В XIX веке Россия была одним из крупнейших производителей хмеля в Европе. Основные плантации располагались в центральных и северо-западных губерниях, а также на Урале и в Поволжье.</p>
+        <h2>📜 История хмелеводства в России</h2>
+        <p>До XX века отрасль развивалась экстенсивно. Главными центрами были Московская, Рязанская, Владимирская, Костромская, Вятская и Казанская губернии.</p>
+        <p>В середине XIX века начались первые научные исследования. В 1926 году в Подмосковье заложили коллекционные питомники, а в Чувашии — первый опытный хмельник.</p>
+        <p>В 1980-е годы отрасль достигла пика: валовый сбор составил 3 468 тонн. Основным производителем стала Чувашская Республика.</p>
         <p>Наведите курсор на губернию, чтобы увидеть её название. Кликните — чтобы выделить.</p>
         <p class="hint">💡 Используйте кнопки зума или колесо мыши. Перетаскивайте карту мышью.</p>
     `;
@@ -1511,6 +1513,7 @@ function histRandom() {
 let terInitialized = false;
 let terSvg, terG, terScale = 1, terTx = 0, terTy = 0;
 let terRoutesVisible = false;
+let currentTerroirFilter = null;
 
 function initTerroirsMap() {
     if (terInitialized) return;
@@ -1837,6 +1840,42 @@ function updateLegendCounts() {
     if (elL) elL.textContent = counts.low;
 }
 
+function filterTerroir(level) {
+    if (currentTerroirFilter === level) {
+        resetTerroirFilter();
+        return;
+    }
+    currentTerroirFilter = level;
+    document.querySelectorAll('.legend-item[data-filter]').forEach(i => i.classList.remove('active'));
+    const targetItem = document.querySelector(`.legend-item[data-filter="${level}"]`);
+    if (targetItem) targetItem.classList.add('active');
+    const legend = document.getElementById('terroirLegend');
+    if (legend) legend.classList.add('filtered');
+    if (terG) {
+        terG.querySelectorAll('.region').forEach(poly => {
+            const name = poly.dataset.name;
+            const data = regionsData[name];
+            if (data && data.potential !== level) {
+                poly.classList.add('dimmed');
+            } else {
+                poly.classList.remove('dimmed');
+            }
+        });
+    }
+}
+
+function resetTerroirFilter() {
+    currentTerroirFilter = null;
+    document.querySelectorAll('.legend-item[data-filter]').forEach(i => i.classList.remove('active'));
+    const legend = document.getElementById('terroirLegend');
+    if (legend) legend.classList.remove('filtered');
+    if (terG) {
+        terG.querySelectorAll('.region').forEach(poly => {
+            poly.classList.remove('dimmed');
+        });
+    }
+}
+
 /* ============================================
    МОДАЛЬНЫЕ ОКНА
    ============================================ */
@@ -1926,7 +1965,7 @@ function renderProducts() {
    РЕНДЕР КОМАНДЫ
    ============================================ */
 const teamData = [
-    { name: "Каратаева О.Г.", role: "Руководитель проекта", desc: "к.э.н., доцент кафедры педагогики и психологии профессионального образования.<br><br>📧 okarataeva@rgau-msha.ru", img: "karataeva.jpg", emoji: "👩‍🏫", isLeader: true },
+    { name: "Каратаева Оксана Григорьевна", role: "Руководитель проекта", desc: "к.э.н., доцент кафедры педагогики и психологии профессионального образования.<br><br>📧 okarataeva@rgau-msha.ru", img: "karataeva.jpg", emoji: "👩‍🏫", isLeader: true },
     { name: "Вахрушева И.А.", role: "Участник команды", desc: "к.п.н., доцент кафедры высшей математики.<br>📧 vakhrusheva@rgau-msha.ru", img: "vakhrusheva.jpg", emoji: "👩‍🏫" },
     { name: "Манохина А.А.", role: "Участник команды", desc: "д.с.-х.н., доцент кафедры механизации сельского хозяйства.<br>📧 a.manokhina@rgau-msha.ru", img: "manokhina.jpg", emoji: "👩‍🔬" },
     { name: "Рябчикова В.Г.", role: "Участник команды", desc: "старший преподаватель кафедры иностранных и русского языков.<br>📧 ryabchikova.vera@rgau-msha.ru", img: "ryabchikova.jpg", emoji: "👩‍🏫" },
